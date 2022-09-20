@@ -1,0 +1,3 @@
+/Users/jyesselm/CLionProjects/ring_mapper_analysis/CMakeFiles/ring_mapper_analysis.dir
+/Users/jyesselm/CLionProjects/ring_mapper_analysis/CMakeFiles/edit_cache.dir
+/Users/jyesselm/CLionProjects/ring_mapper_analysis/CMakeFiles/rebuild_cache.dir

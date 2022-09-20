@@ -1,0 +1,141 @@
+## This file contains all the build statements describing the
+# compilation DAG.
+
+# =============================================================================
+# Write statements declared in CMakeLists.txt:
+# 
+# Which is the root file.
+# =============================================================================
+
+# =============================================================================
+# Project: ring_mapper_analysis
+# Configurations: Debug
+# =============================================================================
+
+#############################################
+# Minimal version of Ninja required by this file
+
+ninja_required_version = 1.5
+
+
+#############################################
+# Set configuration variable for custom commands.
+
+CONFIGURATION = Debug
+# =============================================================================
+# Include auxiliary files.
+
+
+#############################################
+# Include rules file.
+
+include CMakeFiles/rules.ninja
+
+# =============================================================================
+
+#############################################
+# Logical path to working directory; prefix for absolute paths.
+
+cmake_ninja_workdir = /Users/jyesselm/CLionProjects/ring_mapper_analysis/
+# =============================================================================
+# Object build statements for EXECUTABLE target ring_mapper_analysis
+
+
+#############################################
+# Order-only phony target for ring_mapper_analysis
+
+build cmake_object_order_depends_target_ring_mapper_analysis: phony || CMakeFiles/ring_mapper_analysis.dir
+
+build CMakeFiles/ring_mapper_analysis.dir/main.cpp.o: CXX_COMPILER__ring_mapper_analysis_Debug /Users/jyesselm/CLionProjects/ring_mapper_analysis/main.cpp || cmake_object_order_depends_target_ring_mapper_analysis
+  DEP_FILE = CMakeFiles/ring_mapper_analysis.dir/main.cpp.o.d
+  FLAGS = -Wno-c++11-extensions -std=gnu++1y -pedantic -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk -std=gnu++14
+  INCLUDES = -I/Users/jyesselm/CLionProjects/ring_mapper_analysis
+  OBJECT_DIR = CMakeFiles/ring_mapper_analysis.dir
+  OBJECT_FILE_DIR = CMakeFiles/ring_mapper_analysis.dir
+
+
+# =============================================================================
+# Link build statements for EXECUTABLE target ring_mapper_analysis
+
+
+#############################################
+# Link the executable ring_mapper_analysis
+
+build ring_mapper_analysis: CXX_EXECUTABLE_LINKER__ring_mapper_analysis_Debug CMakeFiles/ring_mapper_analysis.dir/main.cpp.o
+  FLAGS = -Wno-c++11-extensions -std=gnu++1y -pedantic -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk
+  OBJECT_DIR = CMakeFiles/ring_mapper_analysis.dir
+  POST_BUILD = :
+  PRE_LINK = :
+  TARGET_FILE = ring_mapper_analysis
+  TARGET_PDB = ring_mapper_analysis.dbg
+
+
+#############################################
+# Utility command for edit_cache
+
+build CMakeFiles/edit_cache.util: CUSTOM_COMMAND
+  COMMAND = cd /Users/jyesselm/CLionProjects/ring_mapper_analysis && /opt/homebrew/Cellar/cmake/3.23.1_1/bin/ccmake -S/Users/jyesselm/CLionProjects/ring_mapper_analysis -B/Users/jyesselm/CLionProjects/ring_mapper_analysis
+  DESC = Running CMake cache editor...
+  pool = console
+  restat = 1
+
+build edit_cache: phony CMakeFiles/edit_cache.util
+
+
+#############################################
+# Utility command for rebuild_cache
+
+build CMakeFiles/rebuild_cache.util: CUSTOM_COMMAND
+  COMMAND = cd /Users/jyesselm/CLionProjects/ring_mapper_analysis && /opt/homebrew/Cellar/cmake/3.23.1_1/bin/cmake --regenerate-during-build -S/Users/jyesselm/CLionProjects/ring_mapper_analysis -B/Users/jyesselm/CLionProjects/ring_mapper_analysis
+  DESC = Running CMake to regenerate build system...
+  pool = console
+  restat = 1
+
+build rebuild_cache: phony CMakeFiles/rebuild_cache.util
+
+# =============================================================================
+# Target aliases.
+
+# =============================================================================
+# Folder targets.
+
+# =============================================================================
+
+#############################################
+# Folder: /Users/jyesselm/CLionProjects/ring_mapper_analysis
+
+build all: phony ring_mapper_analysis
+
+# =============================================================================
+# Built-in targets
+
+
+#############################################
+# Re-run CMake if any of its inputs changed.
+
+build build.ninja: RERUN_CMAKE | /opt/homebrew/Cellar/cmake/3.23.1_1/share/cmake/Modules/CMakeCInformation.cmake /opt/homebrew/Cellar/cmake/3.23.1_1/share/cmake/Modules/CMakeCXXInformation.cmake /opt/homebrew/Cellar/cmake/3.23.1_1/share/cmake/Modules/CMakeCommonLanguageInclude.cmake /opt/homebrew/Cellar/cmake/3.23.1_1/share/cmake/Modules/CMakeGenericSystem.cmake /opt/homebrew/Cellar/cmake/3.23.1_1/share/cmake/Modules/CMakeInitializeConfigs.cmake /opt/homebrew/Cellar/cmake/3.23.1_1/share/cmake/Modules/CMakeLanguageInformation.cmake /opt/homebrew/Cellar/cmake/3.23.1_1/share/cmake/Modules/CMakeSystemSpecificInformation.cmake /opt/homebrew/Cellar/cmake/3.23.1_1/share/cmake/Modules/CMakeSystemSpecificInitialize.cmake /opt/homebrew/Cellar/cmake/3.23.1_1/share/cmake/Modules/Compiler/AppleClang-C.cmake /opt/homebrew/Cellar/cmake/3.23.1_1/share/cmake/Modules/Compiler/AppleClang-CXX.cmake /opt/homebrew/Cellar/cmake/3.23.1_1/share/cmake/Modules/Compiler/CMakeCommonCompilerMacros.cmake /opt/homebrew/Cellar/cmake/3.23.1_1/share/cmake/Modules/Compiler/Clang.cmake /opt/homebrew/Cellar/cmake/3.23.1_1/share/cmake/Modules/Compiler/GNU.cmake /opt/homebrew/Cellar/cmake/3.23.1_1/share/cmake/Modules/Platform/Apple-AppleClang-C.cmake /opt/homebrew/Cellar/cmake/3.23.1_1/share/cmake/Modules/Platform/Apple-AppleClang-CXX.cmake /opt/homebrew/Cellar/cmake/3.23.1_1/share/cmake/Modules/Platform/Apple-Clang-C.cmake /opt/homebrew/Cellar/cmake/3.23.1_1/share/cmake/Modules/Platform/Apple-Clang-CXX.cmake /opt/homebrew/Cellar/cmake/3.23.1_1/share/cmake/Modules/Platform/Apple-Clang.cmake /opt/homebrew/Cellar/cmake/3.23.1_1/share/cmake/Modules/Platform/Darwin-Initialize.cmake /opt/homebrew/Cellar/cmake/3.23.1_1/share/cmake/Modules/Platform/Darwin.cmake /opt/homebrew/Cellar/cmake/3.23.1_1/share/cmake/Modules/Platform/UnixPaths.cmake CMakeCache.txt CMakeFiles/3.23.1/CMakeCCompiler.cmake CMakeFiles/3.23.1/CMakeCXXCompiler.cmake CMakeFiles/3.23.1/CMakeSystem.cmake CMakeLists.txt
+  pool = console
+
+
+#############################################
+# A missing CMake input file is not an error.
+
+build /opt/homebrew/Cellar/cmake/3.23.1_1/share/cmake/Modules/CMakeCInformation.cmake /opt/homebrew/Cellar/cmake/3.23.1_1/share/cmake/Modules/CMakeCXXInformation.cmake /opt/homebrew/Cellar/cmake/3.23.1_1/share/cmake/Modules/CMakeCommonLanguageInclude.cmake /opt/homebrew/Cellar/cmake/3.23.1_1/share/cmake/Modules/CMakeGenericSystem.cmake /opt/homebrew/Cellar/cmake/3.23.1_1/share/cmake/Modules/CMakeInitializeConfigs.cmake /opt/homebrew/Cellar/cmake/3.23.1_1/share/cmake/Modules/CMakeLanguageInformation.cmake /opt/homebrew/Cellar/cmake/3.23.1_1/share/cmake/Modules/CMakeSystemSpecificInformation.cmake /opt/homebrew/Cellar/cmake/3.23.1_1/share/cmake/Modules/CMakeSystemSpecificInitialize.cmake /opt/homebrew/Cellar/cmake/3.23.1_1/share/cmake/Modules/Compiler/AppleClang-C.cmake /opt/homebrew/Cellar/cmake/3.23.1_1/share/cmake/Modules/Compiler/AppleClang-CXX.cmake /opt/homebrew/Cellar/cmake/3.23.1_1/share/cmake/Modules/Compiler/CMakeCommonCompilerMacros.cmake /opt/homebrew/Cellar/cmake/3.23.1_1/share/cmake/Modules/Compiler/Clang.cmake /opt/homebrew/Cellar/cmake/3.23.1_1/share/cmake/Modules/Compiler/GNU.cmake /opt/homebrew/Cellar/cmake/3.23.1_1/share/cmake/Modules/Platform/Apple-AppleClang-C.cmake /opt/homebrew/Cellar/cmake/3.23.1_1/share/cmake/Modules/Platform/Apple-AppleClang-CXX.cmake /opt/homebrew/Cellar/cmake/3.23.1_1/share/cmake/Modules/Platform/Apple-Clang-C.cmake /opt/homebrew/Cellar/cmake/3.23.1_1/share/cmake/Modules/Platform/Apple-Clang-CXX.cmake /opt/homebrew/Cellar/cmake/3.23.1_1/share/cmake/Modules/Platform/Apple-Clang.cmake /opt/homebrew/Cellar/cmake/3.23.1_1/share/cmake/Modules/Platform/Darwin-Initialize.cmake /opt/homebrew/Cellar/cmake/3.23.1_1/share/cmake/Modules/Platform/Darwin.cmake /opt/homebrew/Cellar/cmake/3.23.1_1/share/cmake/Modules/Platform/UnixPaths.cmake CMakeCache.txt CMakeFiles/3.23.1/CMakeCCompiler.cmake CMakeFiles/3.23.1/CMakeCXXCompiler.cmake CMakeFiles/3.23.1/CMakeSystem.cmake CMakeLists.txt: phony
+
+
+#############################################
+# Clean all the built files.
+
+build clean: CLEAN
+
+
+#############################################
+# Print all primary targets available.
+
+build help: HELP
+
+
+#############################################
+# Make the all target the default.
+
+default all
