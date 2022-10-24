@@ -46,12 +46,12 @@ cmake_ninja_workdir = /Users/jyesselm/CLionProjects/ring_mapper_analysis/
 
 build cmake_object_order_depends_target_ring_mapper_analysis: phony || CMakeFiles/ring_mapper_analysis.dir
 
-build CMakeFiles/ring_mapper_analysis.dir/main.cpp.o: CXX_COMPILER__ring_mapper_analysis_Debug /Users/jyesselm/CLionProjects/ring_mapper_analysis/main.cpp || cmake_object_order_depends_target_ring_mapper_analysis
-  DEP_FILE = CMakeFiles/ring_mapper_analysis.dir/main.cpp.o.d
+build CMakeFiles/ring_mapper_analysis.dir/src/main.cpp.o: CXX_COMPILER__ring_mapper_analysis_Debug /Users/jyesselm/CLionProjects/ring_mapper_analysis/src/main.cpp || cmake_object_order_depends_target_ring_mapper_analysis
+  DEP_FILE = CMakeFiles/ring_mapper_analysis.dir/src/main.cpp.o.d
   FLAGS = -Wno-c++11-extensions -std=gnu++1y -pedantic -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk -std=gnu++14
-  INCLUDES = -I/Users/jyesselm/CLionProjects/ring_mapper_analysis
+  INCLUDES = -I/Users/jyesselm/CLionProjects/ring_mapper_analysis/src -I/Users/jyesselm/CLionProjects/ring_mapper_analysis/src/base -I/Users/jyesselm/CLionProjects/ring_mapper_analysis/src/unittests -I/Users/jyesselm/CLionProjects/ring_mapper_analysis/src/unittests/all_unittests -I/Users/jyesselm/CLionProjects/ring_mapper_analysis/src/unittest_resources
   OBJECT_DIR = CMakeFiles/ring_mapper_analysis.dir
-  OBJECT_FILE_DIR = CMakeFiles/ring_mapper_analysis.dir
+  OBJECT_FILE_DIR = CMakeFiles/ring_mapper_analysis.dir/src
 
 
 # =============================================================================
@@ -61,13 +61,45 @@ build CMakeFiles/ring_mapper_analysis.dir/main.cpp.o: CXX_COMPILER__ring_mapper_
 #############################################
 # Link the executable ring_mapper_analysis
 
-build ring_mapper_analysis: CXX_EXECUTABLE_LINKER__ring_mapper_analysis_Debug CMakeFiles/ring_mapper_analysis.dir/main.cpp.o
+build ring_mapper_analysis: CXX_EXECUTABLE_LINKER__ring_mapper_analysis_Debug CMakeFiles/ring_mapper_analysis.dir/src/main.cpp.o
   FLAGS = -Wno-c++11-extensions -std=gnu++1y -pedantic -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk
   OBJECT_DIR = CMakeFiles/ring_mapper_analysis.dir
   POST_BUILD = :
   PRE_LINK = :
   TARGET_FILE = ring_mapper_analysis
   TARGET_PDB = ring_mapper_analysis.dbg
+
+# =============================================================================
+# Object build statements for EXECUTABLE target ring_mapper_unittest
+
+
+#############################################
+# Order-only phony target for ring_mapper_unittest
+
+build cmake_object_order_depends_target_ring_mapper_unittest: phony || CMakeFiles/ring_mapper_unittest.dir
+
+build CMakeFiles/ring_mapper_unittest.dir/src/unittests/all_unittests/ring_mapper_unittest.cpp.o: CXX_COMPILER__ring_mapper_unittest_Debug /Users/jyesselm/CLionProjects/ring_mapper_analysis/src/unittests/all_unittests/ring_mapper_unittest.cpp || cmake_object_order_depends_target_ring_mapper_unittest
+  DEP_FILE = CMakeFiles/ring_mapper_unittest.dir/src/unittests/all_unittests/ring_mapper_unittest.cpp.o.d
+  FLAGS = -Wno-c++11-extensions -std=gnu++1y -pedantic -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk -std=gnu++14
+  INCLUDES = -I/Users/jyesselm/CLionProjects/ring_mapper_analysis/src -I/Users/jyesselm/CLionProjects/ring_mapper_analysis/src/base -I/Users/jyesselm/CLionProjects/ring_mapper_analysis/src/unittests -I/Users/jyesselm/CLionProjects/ring_mapper_analysis/src/unittests/all_unittests -I/Users/jyesselm/CLionProjects/ring_mapper_analysis/src/unittest_resources
+  OBJECT_DIR = CMakeFiles/ring_mapper_unittest.dir
+  OBJECT_FILE_DIR = CMakeFiles/ring_mapper_unittest.dir/src/unittests/all_unittests
+
+
+# =============================================================================
+# Link build statements for EXECUTABLE target ring_mapper_unittest
+
+
+#############################################
+# Link the executable ring_mapper_unittest
+
+build ring_mapper_unittest: CXX_EXECUTABLE_LINKER__ring_mapper_unittest_Debug CMakeFiles/ring_mapper_unittest.dir/src/unittests/all_unittests/ring_mapper_unittest.cpp.o
+  FLAGS = -Wno-c++11-extensions -std=gnu++1y -pedantic -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk
+  OBJECT_DIR = CMakeFiles/ring_mapper_unittest.dir
+  POST_BUILD = :
+  PRE_LINK = :
+  TARGET_FILE = ring_mapper_unittest
+  TARGET_PDB = ring_mapper_unittest.dbg
 
 
 #############################################
@@ -104,7 +136,7 @@ build rebuild_cache: phony CMakeFiles/rebuild_cache.util
 #############################################
 # Folder: /Users/jyesselm/CLionProjects/ring_mapper_analysis
 
-build all: phony ring_mapper_analysis
+build all: phony ring_mapper_analysis ring_mapper_unittest
 
 # =============================================================================
 # Built-in targets

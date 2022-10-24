@@ -15,7 +15,8 @@
 					"source" : ".",
 					"targetIndexes" : 
 					[
-						0
+						0,
+						1
 					]
 				}
 			],
@@ -30,7 +31,8 @@
 					"name" : "ring_mapper_analysis",
 					"targetIndexes" : 
 					[
-						0
+						0,
+						1
 					]
 				}
 			],
@@ -39,8 +41,15 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "ring_mapper_analysis::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-ring_mapper_analysis-Debug-50c542dc2c764d283b06.json",
+					"jsonFile" : "target-ring_mapper_analysis-Debug-52382e3ac64fc2e6913d.json",
 					"name" : "ring_mapper_analysis",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "ring_mapper_unittest::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ring_mapper_unittest-Debug-596502519ce8a4c005fc.json",
+					"name" : "ring_mapper_unittest",
 					"projectIndex" : 0
 				}
 			]
