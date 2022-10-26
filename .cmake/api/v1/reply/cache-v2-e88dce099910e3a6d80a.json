@@ -79,7 +79,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "23"
+			"value" : "22"
 		},
 		{
 			"name" : "CMAKE_CACHE_PATCH_VERSION",
@@ -91,7 +91,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "1"
+			"value" : "3"
 		},
 		{
 			"name" : "CMAKE_COMMAND",
@@ -103,7 +103,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "/opt/homebrew/Cellar/cmake/3.23.1_1/bin/cmake"
+			"value" : "/Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake"
 		},
 		{
 			"name" : "CMAKE_CPACK_COMMAND",
@@ -115,7 +115,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "/opt/homebrew/Cellar/cmake/3.23.1_1/bin/cpack"
+			"value" : "/Applications/CLion.app/Contents/bin/cmake/mac/bin/cpack"
 		},
 		{
 			"name" : "CMAKE_CTEST_COMMAND",
@@ -127,7 +127,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "/opt/homebrew/Cellar/cmake/3.23.1_1/bin/ctest"
+			"value" : "/Applications/CLion.app/Contents/bin/cmake/mac/bin/ctest"
 		},
 		{
 			"name" : "CMAKE_CXX_COMPILER",
@@ -855,7 +855,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "/opt/homebrew/Cellar/cmake/3.23.1_1/share/cmake"
+			"value" : "/Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.22"
 		},
 		{
 			"name" : "CMAKE_SHARED_LINKER_FLAGS",
