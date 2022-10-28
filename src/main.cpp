@@ -11,6 +11,7 @@
 
 /* the format for entering data is as follows:
  * ./ring_mapper_analysis <directory of your test file> <number of reads> <i to retrieve> <j to retrieve>
+ * i and j can be omitted if you don't want to retrieve anything
  */
 
 int main(int argc, char **argv) {
