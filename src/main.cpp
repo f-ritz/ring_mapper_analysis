@@ -11,7 +11,7 @@
 
 int main(int argc, char **argv) {
     std::cout << "Processing..." << std::endl;
-    if (argc > 4) {
+    if (argc > 5) {
         std::cout << "Too many command-line arguments!!" << std::endl;
         std::cout << "./ring_mapper_analysis <directory> <number of reads> <i to retrieve> <j to involve>" << std::endl;
         exit(0);
@@ -68,6 +68,14 @@ int main(int argc, char **argv) {
     std::ofstream ring_mapper_retrieval_csv;
     ring_mapper_retrieval_csv.open("ring_mapper_retrieval.csv");
     ring_mapper_retrieval_csv << "i,j" << std::endl;
+
+    std::ofstream rm_i;
+    std::ofstream rm_j;
+    rm_i.open("rm_i.csv");
+    rm_j.open("rm_j.csv");
+
+
+
     //std::ofstream ring_mapper_histogram_positions_csv;
     //ring_mapper_histogram_positions_csv.open("ring_mapper_positions.csv");
     //std::ofstream debug_output_csv;
@@ -129,9 +137,21 @@ int main(int argc, char **argv) {
                             mut_i = 1;
                         }
                         for (int j = i + 1; j < data.length(); j++) {
+                            /*
+                            if (argv[3] != "") {
+                                if (argv[4] != "") {
+                                    if (i_retrieval == i) {
+                                        if (j_retrieval == j) {
+                                            ring_mapper_retrieval_csv << data[i] << "," << data[j] << std::endl;
+                                        }
+                                    }
+                                }
+                            }
+                             */
                             int mut_j = 0;
                             if ((data[j] == 'A') || (data[j] == 'T') || (data[j] == 'C') || (data[j] == 'G')) {
                                 mut_j = 1;
+                                rm_i << i << "," << j << std::endl;
                             }
                             if (mut_i == 0 && mut_j == 0) {
                                 a[i][j]++;
@@ -145,12 +165,6 @@ int main(int argc, char **argv) {
                             } else {
                                 d[i][j]++;
                             }
-
-                            if (true) {
-                            }
-
-
-
                         }
                     }
                 }
@@ -172,7 +186,7 @@ int main(int argc, char **argv) {
             }
         }
     }
-    
+
 
     sum_muts = std::accumulate(mut_positions.begin(), mut_positions.end(), 0);
     ring_mapper_histogram_csv << "i,histogram_values" << std::endl;
