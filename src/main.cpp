@@ -172,6 +172,7 @@ int main(int argc, char **argv) {
             }
         }
     }
+    
 
     sum_muts = std::accumulate(mut_positions.begin(), mut_positions.end(), 0);
     ring_mapper_histogram_csv << "i,histogram_values" << std::endl;
