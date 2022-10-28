@@ -27,6 +27,10 @@ int main(int argc, char **argv) {
     }*/
     int number_of_reads;
     number_of_reads = std::stoi(argv[2]);
+    int i_retrieval;
+    i_retrieval = std::stoi(argv[3]);
+    int j_retrieval;
+    j_retrieval = std::stoi(argv[4]);
     int n = 0;
     int counter = 0;
     int vector_size;
@@ -61,10 +65,13 @@ int main(int argc, char **argv) {
                              << "d" << std::endl;
     std::ofstream ring_mapper_histogram_csv;
     ring_mapper_histogram_csv.open("ring_mapper_histogram.csv");
+    std::ofstream ring_mapper_retrieval_csv;
+    ring_mapper_retrieval_csv.open("ring_mapper_retrieval.csv");
+    ring_mapper_retrieval_csv << "i,j" << std::endl;
     //std::ofstream ring_mapper_histogram_positions_csv;
     //ring_mapper_histogram_positions_csv.open("ring_mapper_positions.csv");
-    std::ofstream debug_output_csv;
-    debug_output_csv.open("debug_output.csv");
+    //std::ofstream debug_output_csv;
+    //debug_output_csv.open("debug_output.csv");
     /*
     std::ofstream ring_mapper_a_csv;
     ring_mapper_a_csv.open("ring_mapper_a.csv");
@@ -138,12 +145,32 @@ int main(int argc, char **argv) {
                             } else {
                                 d[i][j]++;
                             }
+
+                            if (true) {
+                            }
+
+
+
                         }
                     }
                 }
             }
         }
         counter++;
+    }
+
+    if (argv[3] != "") {
+        if (argv[4] != "") {
+            for (int i = 0; i < data.length(); i++) {
+                for (int j = i + 1; j < data.length(); j++) {
+                    if (i_retrieval == i) {
+                        if (j_retrieval == j) {
+                            ring_mapper_retrieval_csv << data[i] << "," << data[j] << std::endl;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     sum_muts = std::accumulate(mut_positions.begin(), mut_positions.end(), 0);
