@@ -9,20 +9,33 @@
 #include <stdexcept>
 #include <numeric>
 
+/* the format for entering data is as follows:
+ * ./ring_mapper_analysis <directory of your test file> <number of reads> <i to retrieve> <j to retrieve>
+ */
+
 int main(int argc, char **argv) {
     std::cout << "Processing..." << std::endl;
-    if (argc > 2) {
+    if (argc > 4) {
         std::cout << "Too many command-line arguments!!" << std::endl;
+        std::cout << "./ring_mapper_analysis <directory> <number of reads> <i to retrieve> <j to involve>" << std::endl;
         exit(0);
     } else if (argc < 1) {
-        std::cout << "Need command-line argument for file!!" << std::endl;
+        std::cout << "Need command-line arguments for file!!" << std::endl;
+        std::cout << "./ring_mapper_analysis <directory> <number of reads> <i to retrieve> <j to involve>" << std::endl;
         exit(0);
-    }
+    } /*else if (argc != 4) {
+        std::cout << "Argument error!" << std::endl;
+        std::cout << "Arguments enter as follows:" << std::endl;
+        std::cout << "./ring_mapper_analysis <directory> <number of reads> <i> <j>" << std::endl;
+        exit(0);
+    }*/
+    int number_of_reads;
+    number_of_reads = std::stoi(argv[2]);
     int n = 0;
     int counter = 0;
-    int vector_size = 0;
-    int num_mutations_int = 0;
-    int sum_muts = 0;
+    int vector_size;
+    int num_mutations_int;
+    int sum_muts;
     String filename(argv[1]);
     String line;
     String data;
@@ -102,7 +115,7 @@ int main(int argc, char **argv) {
             data = data_temp[1];
             num_mutations_int = std::stoi(data_temp[2]);
             n += 1;
-            if (n > 1000) {
+            if (n > number_of_reads) {
                 break;
             }
             if (num_mutations_int > 0) {
