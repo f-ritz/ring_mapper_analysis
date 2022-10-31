@@ -19,7 +19,8 @@ int main(int argc, char **argv) {
         std::cout << "Need command-line arguments for file!!" << std::endl;
         std::cout << "./ring_mapper_analysis <directory> <number of reads> <i to retrieve> <j to involve>" << std::endl;
         exit(0);
-    } /*else if (argc != 4) {
+    }
+    /*else if (argc != 4) {
         std::cout << "Argument error!" << std::endl;
         std::cout << "Arguments enter as follows:" << std::endl;
         std::cout << "./ring_mapper_analysis <directory> <number of reads> <i> <j>" << std::endl;
@@ -67,33 +68,9 @@ int main(int argc, char **argv) {
     ring_mapper_histogram_csv.open("ring_mapper_histogram.csv");
     std::ofstream ring_mapper_retrieval_csv;
     ring_mapper_retrieval_csv.open("ring_mapper_retrieval.csv");
-    ring_mapper_retrieval_csv << "i,j" << std::endl;
-
-    std::ofstream rm_i;
-    std::ofstream rm_j;
-    rm_i.open("rm_i.csv");
-    rm_j.open("rm_j.csv");
-
-
-
-    //std::ofstream ring_mapper_histogram_positions_csv;
-    //ring_mapper_histogram_positions_csv.open("ring_mapper_positions.csv");
-    //std::ofstream debug_output_csv;
-    //debug_output_csv.open("debug_output.csv");
-    /*
-    std::ofstream ring_mapper_a_csv;
-    ring_mapper_a_csv.open("ring_mapper_a.csv");
-    ring_mapper_a_csv << "i,j" << std::endl;
-    std::ofstream ring_mapper_b_csv;
-    ring_mapper_b_csv.open("ring_mapper_b.csv");
-    ring_mapper_b_csv << "i,j" << std::endl;
-    std::ofstream ring_mapper_c_csv;
-    ring_mapper_c_csv.open("ring_mapper_c.csv");
-    ring_mapper_c_csv << "i,j" << std::endl;
-    std::ofstream ring_mapper_d_csv;
-    ring_mapper_d_csv.open("ring_mapper_d.csv");
-    ring_mapper_d_csv << "i,j" << std::endl;
-     */
+    ring_mapper_retrieval_csv << "i,j_on_second line" << std::endl;
+    std::ofstream ring_mapper_histogram_positions_csv;
+    ring_mapper_histogram_positions_csv.open("ring_mapper_counter.csv");
     std::vector<std::vector<float>> a;
     std::vector<std::vector<float>> b;
     std::vector<std::vector<float>> c;
@@ -115,7 +92,6 @@ int main(int argc, char **argv) {
         mut_positions.push_back(0.0f);
         mut_positions_frequency.push_back(0);
     }
-
     while (input_file.good()) {
         getline(input_file, line);
         if (line.length() < 2) {
@@ -136,6 +112,11 @@ int main(int argc, char **argv) {
                         if ((data[i] == 'A') || (data[i] == 'T') || (data[i] == 'C') || (data[i] == 'G')) {
                             mut_i = 1;
                         }
+                        if (std::strcmp(argv[3], "") != 0) {
+                            if (i_retrieval == i) {
+                                ring_mapper_retrieval_csv << data[i] << std::endl;
+                            }
+                        }
                         for (int j = i + 1; j < data.length(); j++) {
                             /*
                             if (argv[3] != "") {
@@ -151,7 +132,11 @@ int main(int argc, char **argv) {
                             int mut_j = 0;
                             if ((data[j] == 'A') || (data[j] == 'T') || (data[j] == 'C') || (data[j] == 'G')) {
                                 mut_j = 1;
-                                rm_i << i << "," << j << std::endl;
+                            }
+                            if (std::strcmp(argv[4], "") != 0) {
+                                if (j_retrieval == j) {
+                                    ring_mapper_retrieval_csv << data[j] << std::endl;
+                                }
                             }
                             if (mut_i == 0 && mut_j == 0) {
                                 a[i][j]++;
@@ -172,9 +157,9 @@ int main(int argc, char **argv) {
         }
         counter++;
     }
-
-    if (argv[3] != "") {
-        if (argv[4] != "") {
+    /*
+    if (std::strcmp(argv[3], "") != 0) {
+        if (std::strcmp(argv[4], "") != 0) {
             for (int i = 0; i < data.length(); i++) {
                 for (int j = i + 1; j < data.length(); j++) {
                     if (i_retrieval == i) {
@@ -186,18 +171,15 @@ int main(int argc, char **argv) {
             }
         }
     }
-
-
+     */
     sum_muts = std::accumulate(mut_positions.begin(), mut_positions.end(), 0);
     ring_mapper_histogram_csv << "i,histogram_values" << std::endl;
-    //ring_mapper_histogram_positions_csv << "i, num_single_muts, total_muts: " << sum_muts << std::endl;
+    ring_mapper_histogram_positions_csv << "i, num_single_muts, total_muts: " << sum_muts << std::endl;
     for (int i = 0; i < vector_size; i++) {
         mut_positions_frequency[i] = (mut_positions[i] / sum_muts);
-        //ring_mapper_histogram_positions_csv << i + 1 << "," << mut_positions[i] << std::endl;
+        ring_mapper_histogram_positions_csv << i + 1 << "," << mut_positions[i] << std::endl;
         ring_mapper_histogram_csv << i + 1 << "," << mut_positions_frequency[i] << std::endl;
     }
-    //std::cout << std::accumulate(mut_positions_frequency.begin(), mut_positions_frequency.end(), 0) << std::endl;
-
     for (int i = 0; i < vector_size; i++) {
         for (int j = i + 1; j < vector_size; j++) {
             float dim = (a[i][j] + b[i][j]) * (c[i][j] + d[i][j]) * (a[i][j] + c[i][j]) * (b[i][j] + d[i][j]);
