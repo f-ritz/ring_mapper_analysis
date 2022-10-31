@@ -20,12 +20,6 @@ int main(int argc, char **argv) {
         std::cout << "./ring_mapper_analysis <directory> <number of reads> <i to retrieve> <j to involve>" << std::endl;
         exit(0);
     }
-    /*else if (argc != 4) {
-        std::cout << "Argument error!" << std::endl;
-        std::cout << "Arguments enter as follows:" << std::endl;
-        std::cout << "./ring_mapper_analysis <directory> <number of reads> <i> <j>" << std::endl;
-        exit(0);
-    }*/
     int number_of_reads;
     number_of_reads = std::stoi(argv[2]);
     int i_retrieval;
@@ -68,7 +62,7 @@ int main(int argc, char **argv) {
     ring_mapper_histogram_csv.open("ring_mapper_histogram.csv");
     std::ofstream ring_mapper_retrieval_csv;
     ring_mapper_retrieval_csv.open("ring_mapper_retrieval.csv");
-    ring_mapper_retrieval_csv << "i,j_on_second line" << std::endl;
+    ring_mapper_retrieval_csv << "i,j_on_second_line" << std::endl;
     std::ofstream ring_mapper_histogram_positions_csv;
     ring_mapper_histogram_positions_csv.open("ring_mapper_counter.csv");
     std::vector<std::vector<float>> a;
@@ -98,7 +92,7 @@ int main(int argc, char **argv) {
             break;
         }
         data_temp = split(line, "\t");
-        if (counter > 2) /* trims the 1st 3 lines */ {
+        if (counter > 2) {
             data = data_temp[1];
             num_mutations_int = std::stoi(data_temp[2]);
             n += 1;
@@ -112,32 +106,10 @@ int main(int argc, char **argv) {
                         if ((data[i] == 'A') || (data[i] == 'T') || (data[i] == 'C') || (data[i] == 'G')) {
                             mut_i = 1;
                         }
-                        if (std::strcmp(argv[3], "") != 0) {
-                            //if (i_retrieval == i) {
-                            //    ring_mapper_retrieval_csv << data[i] << std::endl;
-                            //}
-                            
-                        }
                         for (int j = i + 1; j < data.length(); j++) {
-                            /*
-                            if (argv[3] != "") {
-                                if (argv[4] != "") {
-                                    if (i_retrieval == i) {
-                                        if (j_retrieval == j) {
-                                            ring_mapper_retrieval_csv << data[i] << "," << data[j] << std::endl;
-                                        }
-                                    }
-                                }
-                            }
-                             */
                             int mut_j = 0;
                             if ((data[j] == 'A') || (data[j] == 'T') || (data[j] == 'C') || (data[j] == 'G')) {
                                 mut_j = 1;
-                            }
-                            if (std::strcmp(argv[4], "") != 0) {
-                                if (j_retrieval == j) {
-                                    ring_mapper_retrieval_csv << data[j] << std::endl;
-                                }
                             }
                             if (mut_i == 0 && mut_j == 0) {
                                 a[i][j]++;
@@ -158,21 +130,9 @@ int main(int argc, char **argv) {
         }
         counter++;
     }
-    /*
-    if (std::strcmp(argv[3], "") != 0) {
-        if (std::strcmp(argv[4], "") != 0) {
-            for (int i = 0; i < data.length(); i++) {
-                for (int j = i + 1; j < data.length(); j++) {
-                    if (i_retrieval == i) {
-                        if (j_retrieval == j) {
-                            ring_mapper_retrieval_csv << data[i] << "," << data[j] << std::endl;
-                        }
-                    }
-                }
-            }
-        }
-    }
-     */
+
+    ring_mapper_retrieval_csv << data[i_retrieval] << "," << data[j_retrieval] << std::endl;
+
     sum_muts = std::accumulate(mut_positions.begin(), mut_positions.end(), 0);
     ring_mapper_histogram_csv << "i,histogram_values" << std::endl;
     ring_mapper_histogram_positions_csv << "i, num_single_muts, total_muts: " << sum_muts << std::endl;
