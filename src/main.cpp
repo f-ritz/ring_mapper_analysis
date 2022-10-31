@@ -113,9 +113,9 @@ int main(int argc, char **argv) {
                             mut_i = 1;
                         }
                         if (std::strcmp(argv[3], "") != 0) {
-                            if (i_retrieval == i) {
-                                ring_mapper_retrieval_csv << data[i] << std::endl;
-                            }
+                            //if (i_retrieval == i) {
+                            //    ring_mapper_retrieval_csv << data[i] << std::endl;
+                            //}
                         }
                         for (int j = i + 1; j < data.length(); j++) {
                             /*
