@@ -13,11 +13,13 @@ int main(int argc, char **argv) {
     std::cout << "Processing..." << std::endl;
     if (argc > 5) {
         std::cout << "Too many command-line arguments!!" << std::endl;
-        std::cout << "./ring_mapper_analysis <directory> <number of reads> <i to retrieve> <j to involve>" << std::endl;
+        std::cout << "./ring_mapper_analysis <directory> <number of reads> <i to retrieve> <j to retrieve>"
+                  << std::endl;
         exit(0);
     } else if (argc < 1) {
         std::cout << "Need command-line arguments for file!!" << std::endl;
-        std::cout << "./ring_mapper_analysis <directory> <number of reads> <i to retrieve> <j to involve>" << std::endl;
+        std::cout << "./ring_mapper_analysis <directory> <number of reads> <i to retrieve> <j to retrieve>"
+                  << std::endl;
         exit(0);
     }
     int number_of_reads;
@@ -62,7 +64,7 @@ int main(int argc, char **argv) {
     ring_mapper_histogram_csv.open("ring_mapper_histogram.csv");
     std::ofstream ring_mapper_retrieval_csv;
     ring_mapper_retrieval_csv.open("ring_mapper_retrieval.csv");
-    ring_mapper_retrieval_csv << "i,j_on_second_line" << std::endl;
+    ring_mapper_retrieval_csv << "i,j" << std::endl;
     std::ofstream ring_mapper_histogram_positions_csv;
     ring_mapper_histogram_positions_csv.open("ring_mapper_counter.csv");
     std::vector<std::vector<float>> a;
@@ -123,6 +125,13 @@ int main(int argc, char **argv) {
                             } else {
                                 d[i][j]++;
                             }
+
+                            if (i == i_retrieval) {
+                                if (j == j_retrieval) {
+                                    ring_mapper_retrieval_csv << data[i_retrieval] << "," << data[j_retrieval]
+                                                              << std::endl;
+                                }
+                            }
                         }
                     }
                 }
@@ -131,7 +140,7 @@ int main(int argc, char **argv) {
         counter++;
     }
 
-    ring_mapper_retrieval_csv << data[i_retrieval] << "," << data[j_retrieval] << std::endl;
+    //ring_mapper_retrieval_csv << data[i_retrieval] << "," << data[j_retrieval] << std::endl;
 
     sum_muts = std::accumulate(mut_positions.begin(), mut_positions.end(), 0);
     ring_mapper_histogram_csv << "i,histogram_values" << std::endl;
