@@ -64,9 +64,11 @@ int main(int argc, char **argv) {
     ring_mapper_histogram_csv.open("ring_mapper_histogram.csv");
     std::ofstream ring_mapper_retrieval_csv;
     ring_mapper_retrieval_csv.open("ring_mapper_temp.csv");
-    ring_mapper_retrieval_csv << "i,j of retrieval coordinates" << std::endl;
     std::ofstream ring_mapper_histogram_positions_csv;
     ring_mapper_histogram_positions_csv.open("ring_mapper_counter.csv");
+    std::ofstream ring_mapper_retrieval_real_csv;
+    ring_mapper_retrieval_real_csv.open("ring_mapper_retrieval.csv");
+    ring_mapper_retrieval_real_csv << "i" << "," << "j" << std::endl;
     std::vector<std::vector<float>> a;
     std::vector<std::vector<float>> b;
     std::vector<std::vector<float>> c;
@@ -88,9 +90,6 @@ int main(int argc, char **argv) {
         mut_positions.push_back(0.0f);
         mut_positions_frequency.push_back(0);
     }
-
-
-
 
     while (input_file.good()) {
         getline(input_file, line);
@@ -133,7 +132,8 @@ int main(int argc, char **argv) {
                             // creates a temp file
                             if (i == i_retrieval) {
                                 if (j == j_retrieval) {
-                                    ring_mapper_retrieval_csv << data[i_retrieval] << "," << data[j_retrieval] << std::endl;
+                                    ring_mapper_retrieval_csv << data[i_retrieval] << "," << data[j_retrieval]
+                                                              << std::endl;
                                 }
                             }
 
@@ -145,20 +145,49 @@ int main(int argc, char **argv) {
         counter++;
     }
 
-    /*
-    std::vector<char> retrieval_temp_storage;
-    std::vector<char> retrieval_temp_i_j;
-    for (int i = 0; i < vector_size; i++) {
-        retrieval_temp_storage.push_back(' ');
-    }
-     */
-
     // here will be the code for retrieving i,j
     // the method is to retrieve lines from the temp file
     // retrieve lines
     // remove/discount lines with , and .
     // replace ATGC presence with 1
 
+    String temp_filename;
+    temp_filename = "ring_mapper_temp.csv";
+    std::ifstream input_temp_file(temp_filename);
+    String temp_line;
+    Strings data_temp_vector;
+
+    while (input_temp_file.good()) {
+        getline(input_temp_file, temp_line);
+        data_temp_vector = split(temp_line, ",");
+        String data_i = data_temp_vector[0];
+        String data_j = data_temp_vector[1];
+
+        if (data_i == "?" || data_i == ".") {
+            data_i = " ";
+            data_j = " ";
+        }
+
+        if (data_j == "?" || data_j == ".") {
+            data_i = " ";
+            data_j = " ";
+        }
+
+        if (data_i == "A" || data_i == "T" || data_i == "C" || data_i == "G") {
+            data_i = "1";
+        }
+
+        if (data_j == "A" || data_j == "T" || data_j == "C" || data_j == "G") {
+            data_j = "1";
+        }
+
+        if (data_i == "0" || data_j == "0" || data_i == "1" || data_j == "1") {
+            ring_mapper_retrieval_real_csv << data_i << "," << data_j << std::endl;
+
+        }
+    }
+
+    // histogram
     sum_muts = std::accumulate(mut_positions.begin(), mut_positions.end(), 0);
     ring_mapper_histogram_csv << "i,histogram_values" << std::endl;
     ring_mapper_histogram_positions_csv << "i, num_single_muts, total_muts: " << sum_muts << std::endl;
@@ -167,6 +196,8 @@ int main(int argc, char **argv) {
         ring_mapper_histogram_positions_csv << i + 1 << "," << mut_positions[i] << std::endl;
         ring_mapper_histogram_csv << i + 1 << "," << mut_positions_frequency[i] << std::endl;
     }
+
+    // results
     for (int i = 0; i < vector_size; i++) {
         for (int j = i + 1; j < vector_size; j++) {
             float dim = (a[i][j] + b[i][j]) * (c[i][j] + d[i][j]) * (a[i][j] + c[i][j]) * (b[i][j] + d[i][j]);
