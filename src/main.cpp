@@ -11,29 +11,32 @@
 
 int main(int argc, char **argv) {
     std::cout << "Processing..." << std::endl;
-    if (argc > 5) {
+    if (argc > 6) {
         std::cout << "Too many command-line arguments!!" << std::endl;
-        std::cout << "./ring_mapper_analysis <directory> <number of reads> <i to retrieve> <j to retrieve>"
-                  << std::endl;
+        std::cout
+                << "./ring_mapper_analysis <directory> <structure directory> <number of reads> <i to retrieve> <j to retrieve>"
+                << std::endl;
         exit(0);
     } else if (argc < 1) {
         std::cout << "Need command-line arguments for file!!" << std::endl;
-        std::cout << "./ring_mapper_analysis <directory> <number of reads> <i to retrieve> <j to retrieve>"
-                  << std::endl;
+        std::cout
+                << "./ring_mapper_analysis <directory> <structure directory> <number of reads> <i to retrieve> <j to retrieve>"
+                << std::endl;
         exit(0);
     }
     int number_of_reads;
-    number_of_reads = std::stoi(argv[2]);
+    number_of_reads = std::stoi(argv[3]);
     int i_retrieval;
-    i_retrieval = std::stoi(argv[3]);
+    i_retrieval = std::stoi(argv[4]);
     int j_retrieval;
-    j_retrieval = std::stoi(argv[4]);
+    j_retrieval = std::stoi(argv[5]);
     int n = 0;
     int counter = 0;
     int vector_size;
     int num_mutations_int;
     int sum_muts;
     String filename(argv[1]);
+    String structure_filename(argv[2]);
     String line;
     String data;
     String num_mutations_str;
@@ -91,6 +94,7 @@ int main(int argc, char **argv) {
         mut_positions_frequency.push_back(0);
     }
 
+    /// @brief - ring mapper algorithm
     while (input_file.good()) {
         getline(input_file, line);
         if (line.length() < 2) {
@@ -128,7 +132,6 @@ int main(int argc, char **argv) {
                             } else {
                                 d[i][j]++;
                             }
-
                             // creates a temp file
                             if (i == i_retrieval) {
                                 if (j == j_retrieval) {
@@ -145,18 +148,12 @@ int main(int argc, char **argv) {
         counter++;
     }
 
-    // here will be the code for retrieving i,j
-    // the method is to retrieve lines from the temp file
-    // retrieve lines
-    // remove/discount lines with , and .
-    // replace ATGC presence with 1
-
+    /// @brief - retrieval
     String temp_filename;
     temp_filename = "ring_mapper_temp.csv";
     std::ifstream input_temp_file(temp_filename);
     String temp_line;
     Strings data_temp_vector;
-
     while (input_temp_file.good()) {
         getline(input_temp_file, temp_line);
         data_temp_vector = split(temp_line, ",");
@@ -187,7 +184,7 @@ int main(int argc, char **argv) {
         }
     }
 
-    // histogram
+    /// @brief - histogram
     sum_muts = std::accumulate(mut_positions.begin(), mut_positions.end(), 0);
     ring_mapper_histogram_csv << "i,histogram_values" << std::endl;
     ring_mapper_histogram_positions_csv << "i, num_single_muts, total_muts: " << sum_muts << std::endl;
@@ -196,8 +193,13 @@ int main(int argc, char **argv) {
         ring_mapper_histogram_positions_csv << i + 1 << "," << mut_positions[i] << std::endl;
         ring_mapper_histogram_csv << i + 1 << "," << mut_positions_frequency[i] << std::endl;
     }
+    std::cout << "Histogram finished..." << std::endl;
 
-    // results
+    // temp file creation for pairing algorithm
+    std::ofstream ring_mapper_temp_2;
+    ring_mapper_temp_2.open("ring_mapper_positions.csv");
+
+    /// @brief - ring mapper results
     for (int i = 0; i < vector_size; i++) {
         for (int j = i + 1; j < vector_size; j++) {
             float dim = (a[i][j] + b[i][j]) * (c[i][j] + d[i][j]) * (a[i][j] + c[i][j]) * (b[i][j] + d[i][j]);
@@ -211,8 +213,123 @@ int main(int argc, char **argv) {
             if (chisq > 20) {
                 ring_mapper_analysis_csv << i + 1 << "," << j + 1 << "," << chisq << "," << a[i][j] << "," << b[i][j]
                                          << "," << c[i][j] << "," << d[i][j] << std::endl;
+                ring_mapper_temp_2 << i + 1 << "," << j + 1 << std::endl;
             }
         }
     }
+    std::cout << "Chisq finished..." << std::endl;
+
+    /// @brief - pairing algorithm
+    // variables are a clusterfuck, apologies for the mess
+    String analysis_filename = "ring_mapper_results.csv";
+    //std::ofstream ring_mapper_pos_csv;
+    //ring_mapper_pos_csv.open("ring_mapper_positions.csv");
+    std::ifstream input_analysis_file(analysis_filename);
+    std::ifstream input_structure_file(structure_filename);
+    String structure_raw;
+    String i_pos;
+    String j_pos;
+    String pos_temp;
+    String base_chain;
+    String basepair_structure_chain;
+    String temp;
+    String temp_1;
+    String basepair_i_string;
+    String basepair_j_string;
+    String ring_mapper_temp_2_line;
+    String ring_mapper_input;
+    Strings pos_temp_vector;
+    Strings i_pos_vector_temp;
+    Strings j_pos_vector_temp;
+    Strings i_pos_vector_str;
+    Strings j_pos_vector_str;
+    Strings cooked_structure;
+    Strings basepairs;
+    Strings basepair_structure;
+    Strings ring_mapper_inputs;
+    Strings i_positions;
+    Strings j_positions;
+    int basepair_i;
+    int basepair_j;
+    Ints i_pos_vector;
+    Ints j_pos_vector;
+
+    /// @brief - structure processing
+    // initializes a vector that contains the processed (cooked) structure
+    for (int i = 0; i < 3; i++) {
+        cooked_structure.push_back("");
+    }
+    // writes each line in the input text file "structure_input.txt" to a spot in cooked_structure
+    for (int i = 0; i < 3; i++) {
+        getline(input_structure_file, structure_raw);
+        cooked_structure[i] = structure_raw;
+    }
+    // processes the cooked_structure and retrieves proper data
+    base_chain = cooked_structure[0];
+    basepair_structure_chain = cooked_structure[1];
+    // more vectors, this time processing the data into its final form to be ready to plug in the algorithm
+    for (int i = 0; i < vector_size; i++) {
+        temp = base_chain[i];
+        temp_1 = basepair_structure_chain[i];
+        basepairs.push_back(temp);
+        basepair_structure.push_back(temp_1);
+    }
+
+    /// @brief - position processing
+    // initializes basepair position vectors
+    //while (ring_mapper_analysis_csv.good()) {
+    //    break;
+    //}
+
+    // retrieves positions of basepairs
+    int pos_loop_counter;
+    while (ring_mapper_temp_2.good()) {
+        if (pos_loop_counter > 0) {
+            getline(input_analysis_file, pos_temp);
+            pos_temp_vector = split(pos_temp, ",");
+            i_pos = pos_temp_vector[0];
+            j_pos = pos_temp_vector[1];
+            if (pos_temp.length() < 2) {
+                break;
+            }
+            i_pos_vector_temp.push_back(i_pos);
+            j_pos_vector_temp.push_back(j_pos);
+            //ring_mapper_pos_csv << i_pos << "," << j_pos << std::endl;
+        }
+
+        pos_loop_counter++;
+    }
+
+    // temp pos vectors go into str vectors
+    for (int i = 0; i < i_pos_vector_temp.size(); i++) {
+        i_pos_vector_str.push_back(i_pos_vector_temp[i + 1]);
+        j_pos_vector_str.push_back(j_pos_vector_temp[i + 1]);
+    }
+    // string to ints
+    for (int i = 0; i < i_pos_vector_str.size(); i++) {
+
+    }
+    for (int j = 0; j < j_pos_vector_str.size(); j++) {
+
+    }
+
+
+
+    // pairing algorithm, here each chisq > 20 basepair will be sorted into WC, NC, LR type basepair based on its structure
+    while (true) {
+        break;
+        //temporary until I figure this out
+    }
+
+    std::cout << "Pairing finished..." << std::endl;
+    std::cout << "(Pairing not yet fully functional)" << std::endl;
+    // end of process
+    //
+    //
+    //
+    //
+    //
+    //
+    // code is finished
     std::cout << "Process finished!" << std::endl;
 }

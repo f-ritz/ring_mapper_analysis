@@ -7,6 +7,9 @@
 
 using String = std::string;
 using Strings = std::vector<std::string>;
+using Char = char;
+using Chars = std::vector<char>;
+using Ints = std::vector<int>;
 
 inline Strings split(const String &org_s, const String &delimiter) {
     String s = org_s;
