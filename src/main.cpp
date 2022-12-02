@@ -221,6 +221,7 @@ int main(int argc, char **argv) {
 
     /// @brief - pairing algorithm
     // variables are a clusterfuck, apologies for the mess
+    // will I clean it up? lolno
     String analysis_filename = "ring_mapper_results.csv";
     //std::ofstream ring_mapper_pos_csv;
     //ring_mapper_pos_csv.open("ring_mapper_positions.csv");
@@ -276,11 +277,6 @@ int main(int argc, char **argv) {
     }
 
     /// @brief - position processing
-    // initializes basepair position vectors
-    //while (ring_mapper_analysis_csv.good()) {
-    //    break;
-    //}
-
     // retrieves positions of basepairs
     int pos_loop_counter;
     while (ring_mapper_temp_2.good()) {
@@ -296,7 +292,6 @@ int main(int argc, char **argv) {
             j_pos_vector_temp.push_back(j_pos);
             //ring_mapper_pos_csv << i_pos << "," << j_pos << std::endl;
         }
-
         pos_loop_counter++;
     }
 
@@ -305,20 +300,121 @@ int main(int argc, char **argv) {
         i_pos_vector_str.push_back(i_pos_vector_temp[i + 1]);
         j_pos_vector_str.push_back(j_pos_vector_temp[i + 1]);
     }
+    /*
     // string to ints
+    //int i_pos_int;
+    //String i_pos_vector_str_i;
+
+    for (int i = 0; i < i_pos_vector_str.size(); i++) {
+        i_pos_vector_str_i = i_pos_vector_str[i];
+        std::stoi(i_pos_vector_str_i);
+        i_pos_vector.push_back(i_pos_vector_str_i);
+    }
+
+    //int j_pos_int;
+    //String j_pos_vector_str_j;
+
+    for (int j = 0; j < j_pos_vector_str.size(); j++) {
+        j_pos_vector_str_j = j_pos_vector_str[j];
+        //j_pos_int = std::stoi(j_pos_vector_str_j);
+        j_pos_vector.push_back(std::stoi(j_pos_vector_str_j));
+    }
+    */
+    //std::cout << i_pos_vector_str[0] << std::endl;
+
+    /// @brief - build the RNA structure using information vectors
+    std::vector<int> twoDInfoVector = {0, 0, 0, 0, 0}; // vector args: {chainNumber, chainPos, null, null, null}
+    std::vector<int> threeDInfoVector = {0, 0, 0, 0,
+                                         0}; // vector args: {bracketNumber, basepairNumber, pairNumber, depth, hasBeenSearched}
+    std::vector<int> emptyVector = {0, 0, 0, 0, 0};
+    std::vector<int> tempUsageVector = {0, 0, 0, 0, 0}; // vector for temporary/transfer usage throughout algo
+    std::vector<std::vector<int>> basepair_structure_info_vecs;
+    for (int i = 0; i < basepair_structure.size(); i++) {
+        basepair_structure_info_vecs.push_back(emptyVector);
+    }
+    for (int y = 0; y < basepair_structure.size(); y++) {
+        // motifs
+        if (basepair_structure[y] == ".") {
+            if (basepair_structure[y - 1] != ".") {
+                twoDInfoVector[0]++;
+                twoDInfoVector[1] = 0;
+            }
+            twoDInfoVector[1]++;
+            basepair_structure_info_vecs[y] = twoDInfoVector;
+        }
+        // helices
+        if (basepair_structure[y] == "(") {
+            if (basepair_structure[y - 1] != "(") {
+                threeDInfoVector[0]++;
+                threeDInfoVector[1] = 0;
+            }
+            threeDInfoVector[1]++;
+            threeDInfoVector[2] = 1;
+            basepair_structure_info_vecs[y] = threeDInfoVector;
+        }
+
+        if (basepair_structure[y] == ")") {
+            if (basepair_structure[y - 1] != ")") {
+                for (int search_back = 1; search_back < basepair_structure.size(); search_back++) {
+                    
+                    if (basepair_structure_info_vecs[y][4] == 0) {
+                        if (basepair_structure[y - search_back] == "(") {
+                            tempUsageVector = basepair_structure_info_vecs[y - search_back];
+                            tempUsageVector[2] = 2;
+                            basepair_structure_info_vecs[y - search_back][4] = 1;
+                            basepair_structure_info_vecs[y] = tempUsageVector;
+                        }
+                    }
+                }
+                /*
+            bool search_back_complete = false;
+            while (search_back_complete == false) {
+                for (int i = 0; i < basepair_structure.size(); i++) {
+                    if (basepair_structure[i - search_back] == "(") {
+                        if (basepair_structure_info_vecs[i][4] == 0) {
+                            basepair_structure_info_vecs[i] = basepair_structure_info_vecs[i - search_back];
+                            basepair_structure_info_vecs[i - search_back][4] = 1;
+                            basepair_structure_info_vecs[i][2];
+                            search_back_complete = true;
+                        }
+                        //search_back_complete = true;
+                    }
+                }
+                search_back++;
+            }
+            */
+            }
+        }
+    }
+
+    /// @brief - debugging code, prints pairing info vectors to a csv
+    std::ofstream pairing_debug;
+    pairing_debug.open("pairing_debug.csv");
+
+    for (int z = 0; z < basepair_structure_info_vecs.size(); z++) {
+        pairing_debug << basepair_structure_info_vecs[z][0] << "," << basepair_structure_info_vecs[z][1]
+                      << "," << basepair_structure_info_vecs[z][2] << "," << basepair_structure_info_vecs[z][3]
+                      << "," << basepair_structure_info_vecs[z][4] << std::endl;
+    }
+
+
+    /// @brief - sort each pair of positions into WC/NC/LR
+    /*
+    String bp_i;
+    String bp_j;
+    String bp_pos_temp;
+    Strings bp_pos_temps;
+    std::ifstream input_position_file("ring_mapper_positions.csv");
+    while (ring_mapper_temp_2.good()) {
+        getline(input_position_file, bp_pos_temp);
+        bp_pos_temps = split(bp_pos_temp, ",");
+        std::cout << bp_pos_temps[0] << std::endl;
+        std::cout << bp_pos_temps[1] << std::endl;
+        break; //temporary until I figure this out
+    }
+     */
     for (int i = 0; i < i_pos_vector_str.size(); i++) {
 
-    }
-    for (int j = 0; j < j_pos_vector_str.size(); j++) {
-
-    }
-
-
-
-    // pairing algorithm, here each chisq > 20 basepair will be sorted into WC, NC, LR type basepair based on its structure
-    while (true) {
-        break;
-        //temporary until I figure this out
     }
 
     std::cout << "Pairing finished..." << std::endl;
