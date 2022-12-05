@@ -352,11 +352,9 @@ int main(int argc, char **argv) {
             threeDInfoVector[2] = 1;
             basepair_structure_info_vecs[y] = threeDInfoVector;
         }
-
         if (basepair_structure[y] == ")") {
             if (basepair_structure[y - 1] != ")") {
-                for (int search_back = 1; search_back < basepair_structure.size(); search_back++) {
-                    
+                for (int search_back = 1; search_back < y; search_back++) {
                     if (basepair_structure_info_vecs[y][4] == 0) {
                         if (basepair_structure[y - search_back] == "(") {
                             tempUsageVector = basepair_structure_info_vecs[y - search_back];
