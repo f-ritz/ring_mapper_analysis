@@ -16,7 +16,7 @@ include_directories(/Users/jyesselm/CLionProjects/ring_mapper_analysis/src/unitt
 include_directories(/Users/jyesselm/CLionProjects/ring_mapper_analysis/src/unittests/all_unittests)
 include_directories(/Users/jyesselm/CLionProjects/ring_mapper_analysis/src/unittest_resources)
 
-add_executable(ring_mapper_analysis src/main.cpp src/base/functions.h)
+add_executable(ring_mapper_analysis src/main.cpp src/base/functions.h src/base/ThreeDInfoVector.cpp src/base/ThreeDInfoVector.h)
 add_executable(ring_mapper_unittest src/unittests/all_unittests/ring_mapper_unittest.cpp src/unittests/doctest.h src/unittests/common.hpp)
 
 add_test(ring_mapper_unittest ring_mapper_unittest)

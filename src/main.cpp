@@ -3,11 +3,14 @@
 #include <map>
 #include <vector>
 #include <cmath>
-#include "../base/functions.h"
 #include <istream>
 #include <ostream>
 #include <stdexcept>
 #include <numeric>
+#include <stack>
+
+#include "../base/functions.h"
+#include "../base/ThreeDInfoVector.h"
 
 int main(int argc, char **argv) {
     std::cout << "Processing..." << std::endl;
@@ -323,77 +326,106 @@ int main(int argc, char **argv) {
     //std::cout << i_pos_vector_str[0] << std::endl;
 
     /// @brief - build the RNA structure using information vectors
-    std::vector<int> twoDInfoVector = {0, 0, 0, 0, 0}; // vector args: {chainNumber, chainPos, null, null, null}
-    std::vector<int> threeDInfoVector = {0, 0, 0, 0,
-                                         0}; // vector args: {bracketNumber, basepairNumber, pairNumber, depth, hasBeenSearched}
-    std::vector<int> emptyVector = {0, 0, 0, 0, 0};
-    std::vector<int> tempUsageVector = {0, 0, 0, 0, 0}; // vector for temporary/transfer usage throughout algo
-    std::vector<std::vector<int>> basepair_structure_info_vecs;
+    // stack creation
+    std::stack<ThreeDInfoVector> stack_info_vectors;
+    ThreeDInfoVector twoDInfoVector = {0, 0, 0, 0, 0};
+    ThreeDInfoVector threeDInfoVector = {0, 0, 0, 0, 0}; // vector args: {bracketNumber, basepairNumber, pairNumber, depth, hasBeenSearched}
+    ThreeDInfoVector emptyVector = {0, 0, 0, 0, 0};
+    ThreeDInfoVector tempUsageVector = {0, 0, 0, 0, 0}; // vector for temporary/transfer usage throughout algo
+    std::vector<ThreeDInfoVector> basepair_structure_info_vecs;
     for (int i = 0; i < basepair_structure.size(); i++) {
         basepair_structure_info_vecs.push_back(emptyVector);
     }
+
+    int open_bracket_counter = 0;
+    int closed_bracket_counter = 0;
+
     for (int y = 0; y < basepair_structure.size(); y++) {
         // motifs
         if (basepair_structure[y] == ".") {
             if (basepair_structure[y - 1] != ".") {
-                twoDInfoVector[0]++;
-                twoDInfoVector[1] = 0;
+                twoDInfoVector.add_bracket_number(); //twoDInfoVector[0]++;
+                twoDInfoVector.set_basepair_number(0);
             }
-            twoDInfoVector[1]++;
+            twoDInfoVector.add_basepair_number();
             basepair_structure_info_vecs[y] = twoDInfoVector;
         }
         // helices
         if (basepair_structure[y] == "(") {
             if (basepair_structure[y - 1] != "(") {
-                threeDInfoVector[0]++;
-                threeDInfoVector[1] = 0;
+                threeDInfoVector.add_bracket_number(); //threeDInfoVector[0]++;
+                threeDInfoVector.set_basepair_number(0); //threeDInfoVector[1] = 0;
             }
-            threeDInfoVector[1]++;
-            threeDInfoVector[2] = 1;
+            threeDInfoVector.add_basepair_number(); //threeDInfoVector[1]++;
+            threeDInfoVector.set_pair_number(1); //threeDInfoVector[2] = 1;
+            stack_info_vectors.push(threeDInfoVector);
             basepair_structure_info_vecs[y] = threeDInfoVector;
+            open_bracket_counter++;
         }
         if (basepair_structure[y] == ")") {
-            if (basepair_structure[y - 1] != ")") {
-                for (int search_back = 1; search_back < y; search_back++) {
-                    if (basepair_structure_info_vecs[y][4] == 0) {
-                        if (basepair_structure[y - search_back] == "(") {
-                            tempUsageVector = basepair_structure_info_vecs[y - search_back];
-                            tempUsageVector[2] = 2;
-                            basepair_structure_info_vecs[y - search_back][4] = 1;
-                            basepair_structure_info_vecs[y] = tempUsageVector;
-                        }
+            //tempUsageVector = stack_info_vectors.pop();
+
+
+
+            /*
+            for (int search_back = 1; search_back < y; search_back++) {
+                if (basepair_structure[y - search_back] == "(") {
+                    if (basepair_structure_info_vecs[y - search_back].get_has_been_searched() == 0) {
+                        basepair_structure_info_vecs[y] = basepair_structure_info_vecs[y - search_back];
+                        basepair_structure_info_vecs[y].set_pair_number(2);
+                        basepair_structure_info_vecs[y - search_back].set_has_been_searched(1);
                     }
                 }
-                /*
-            bool search_back_complete = false;
-            while (search_back_complete == false) {
-                for (int i = 0; i < basepair_structure.size(); i++) {
-                    if (basepair_structure[i - search_back] == "(") {
-                        if (basepair_structure_info_vecs[i][4] == 0) {
-                            basepair_structure_info_vecs[i] = basepair_structure_info_vecs[i - search_back];
-                            basepair_structure_info_vecs[i - search_back][4] = 1;
-                            basepair_structure_info_vecs[i][2];
-                            search_back_complete = true;
-                        }
-                        //search_back_complete = true;
-                    }
-                }
-                search_back++;
             }
             */
-            }
+
+            closed_bracket_counter++;
         }
+        /*
+        if (basepair_structure[y] == ")") {
+            if (basepair_structure[y - 1] != ")") {
+                for (int search_back = 1; search_back < vector_size; search_back++) {
+                    if (basepair_structure[y - search_back] == "(") {
+                        basepair_structure_info_vecs[y - search_back][4] = 1;
+                        tempUsageVector = basepair_structure_info_vecs[y - search_back];
+                        tempUsageVector[2] = 2;
+                        basepair_structure_info_vecs[y] = tempUsageVector;
+                        basepair_structure_info_vecs[y = search_back][4] = 1;
+                        break;
+                    }
+                }
+                ///
+                for (int search_back = 0; search_back < basepair_structure.size(); search_back++) {
+                    if (basepair_structure[y - search_back] == "(") {
+                        if (basepair_structure_info_vecs[y][4] == 0) {
+                            tempUsageVector = basepair_structure_info_vecs[y - search_back];
+                            tempUsageVector[2] = 2;
+                            basepair_structure_info_vecs[y] = tempUsageVector;
+                            basepair_structure_info_vecs[y - search_back][4] = 1;
+                        }
+                    }
+                }
+                ///
+            }
+            //tempUsageVector[1]--;
+            //basepair_structure_info_vecs[y] = tempUsageVector;
+            closed_bracket_counter++;
+        }
+        */
     }
 
-    
+    std::cout << open_bracket_counter << std::endl;
+    std::cout << closed_bracket_counter << std::endl;
+    //std::cout << basepair_structure.size() << std::endl;
+
     /// @brief - debugging code, prints pairing info vectors to a csv
     std::ofstream pairing_debug;
     pairing_debug.open("pairing_debug.csv");
 
     for (int z = 0; z < basepair_structure_info_vecs.size(); z++) {
-        pairing_debug << basepair_structure_info_vecs[z][0] << "," << basepair_structure_info_vecs[z][1]
-                      << "," << basepair_structure_info_vecs[z][2] << "," << basepair_structure_info_vecs[z][3]
-                      << "," << basepair_structure_info_vecs[z][4] << std::endl;
+        pairing_debug << basepair_structure_info_vecs[z].get_bracket_number() << "," << basepair_structure_info_vecs[z].get_basepair_number()
+                      << "," << basepair_structure_info_vecs[z].get_pair_number() << "," << basepair_structure_info_vecs[z].get_helix_depth()
+                      << "," << basepair_structure_info_vecs[z].get_has_been_searched() << std::endl;
     }
 
 
