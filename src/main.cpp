@@ -223,11 +223,8 @@ int main(int argc, char **argv) {
     std::cout << "Chisq finished..." << std::endl;
 
     /// @brief - pairing algorithm
-    // variables are a clusterfuck, apologies for the mess
-    // will I clean it up? lolno
+    // variables are a clusterfuck
     String analysis_filename = "ring_mapper_results.csv";
-    //std::ofstream ring_mapper_pos_csv;
-    //ring_mapper_pos_csv.open("ring_mapper_positions.csv");
     std::ifstream input_analysis_file(analysis_filename);
     std::ifstream input_structure_file(structure_filename);
     String structure_raw;
@@ -253,8 +250,6 @@ int main(int argc, char **argv) {
     Strings ring_mapper_inputs;
     Strings i_positions;
     Strings j_positions;
-    int basepair_i;
-    int basepair_j;
     Ints i_pos_vector;
     Ints j_pos_vector;
 
@@ -279,8 +274,7 @@ int main(int argc, char **argv) {
         basepair_structure.push_back(temp_1);
     }
 
-    /// @brief - position processing
-    // retrieves positions of basepairs
+    /// @brief - position processing, retrieves positions of basepairs
     int pos_loop_counter;
     while (ring_mapper_temp_2.good()) {
         if (pos_loop_counter > 0) {
@@ -303,48 +297,24 @@ int main(int argc, char **argv) {
         i_pos_vector_str.push_back(i_pos_vector_temp[i + 1]);
         j_pos_vector_str.push_back(j_pos_vector_temp[i + 1]);
     }
-    /*
-    // string to ints
-    //int i_pos_int;
-    //String i_pos_vector_str_i;
-
-    for (int i = 0; i < i_pos_vector_str.size(); i++) {
-        i_pos_vector_str_i = i_pos_vector_str[i];
-        std::stoi(i_pos_vector_str_i);
-        i_pos_vector.push_back(i_pos_vector_str_i);
-    }
-
-    //int j_pos_int;
-    //String j_pos_vector_str_j;
-
-    for (int j = 0; j < j_pos_vector_str.size(); j++) {
-        j_pos_vector_str_j = j_pos_vector_str[j];
-        //j_pos_int = std::stoi(j_pos_vector_str_j);
-        j_pos_vector.push_back(std::stoi(j_pos_vector_str_j));
-    }
-    */
-    //std::cout << i_pos_vector_str[0] << std::endl;
 
     /// @brief - build the RNA structure using information vectors
     // stack creation
     std::stack<ThreeDInfoVector> stack_info_vectors;
-    ThreeDInfoVector twoDInfoVector = {0, 0, 0, 0, 0};
-    ThreeDInfoVector threeDInfoVector = {0, 0, 0, 0, 0}; // vector args: {bracketNumber, basepairNumber, pairNumber, depth, hasBeenSearched}
-    ThreeDInfoVector emptyVector = {0, 0, 0, 0, 0};
-    ThreeDInfoVector tempUsageVector = {0, 0, 0, 0, 0}; // vector for temporary/transfer usage throughout algo
+    ThreeDInfoVector twoDInfoVector = {0, 0, 0};
+    ThreeDInfoVector threeDInfoVector = {0, 0, 0}; // vector args: {bracketNumber, basepairNumber, pairNumber}
+    ThreeDInfoVector emptyVector = {0, 0, 0};
+    ThreeDInfoVector tempUsageVector = {0, 0, 0}; // vector for temporary/transfer usage throughout algo
     std::vector<ThreeDInfoVector> basepair_structure_info_vecs;
     for (int i = 0; i < basepair_structure.size(); i++) {
         basepair_structure_info_vecs.push_back(emptyVector);
     }
 
-    int open_bracket_counter = 0;
-    int closed_bracket_counter = 0;
-
     for (int y = 0; y < basepair_structure.size(); y++) {
         // motifs
         if (basepair_structure[y] == ".") {
             if (basepair_structure[y - 1] != ".") {
-                twoDInfoVector.add_bracket_number(); //twoDInfoVector[0]++;
+                twoDInfoVector.add_bracket_number();
                 twoDInfoVector.set_basepair_number(0);
             }
             twoDInfoVector.add_basepair_number();
@@ -353,110 +323,72 @@ int main(int argc, char **argv) {
         // helices
         if (basepair_structure[y] == "(") {
             if (basepair_structure[y - 1] != "(") {
-                threeDInfoVector.add_bracket_number(); //threeDInfoVector[0]++;
-                threeDInfoVector.set_basepair_number(0); //threeDInfoVector[1] = 0;
+                threeDInfoVector.add_bracket_number();
+                threeDInfoVector.set_basepair_number(0);
             }
-            threeDInfoVector.add_basepair_number(); //threeDInfoVector[1]++;
-            threeDInfoVector.set_pair_number(1); //threeDInfoVector[2] = 1;
+            threeDInfoVector.add_basepair_number();
+            threeDInfoVector.set_pair_number(1);
             stack_info_vectors.push(threeDInfoVector);
             basepair_structure_info_vecs[y] = threeDInfoVector;
-            open_bracket_counter++;
         }
         if (basepair_structure[y] == ")") {
-            //tempUsageVector = stack_info_vectors.pop();
-
-
-
-            /*
-            for (int search_back = 1; search_back < y; search_back++) {
-                if (basepair_structure[y - search_back] == "(") {
-                    if (basepair_structure_info_vecs[y - search_back].get_has_been_searched() == 0) {
-                        basepair_structure_info_vecs[y] = basepair_structure_info_vecs[y - search_back];
-                        basepair_structure_info_vecs[y].set_pair_number(2);
-                        basepair_structure_info_vecs[y - search_back].set_has_been_searched(1);
-                    }
-                }
-            }
-            */
-
-            closed_bracket_counter++;
+            tempUsageVector = stack_info_vectors.top();
+            tempUsageVector.set_pair_number(2);
+            basepair_structure_info_vecs[y] = tempUsageVector;
+            stack_info_vectors.pop();
         }
-        /*
-        if (basepair_structure[y] == ")") {
-            if (basepair_structure[y - 1] != ")") {
-                for (int search_back = 1; search_back < vector_size; search_back++) {
-                    if (basepair_structure[y - search_back] == "(") {
-                        basepair_structure_info_vecs[y - search_back][4] = 1;
-                        tempUsageVector = basepair_structure_info_vecs[y - search_back];
-                        tempUsageVector[2] = 2;
-                        basepair_structure_info_vecs[y] = tempUsageVector;
-                        basepair_structure_info_vecs[y = search_back][4] = 1;
-                        break;
-                    }
-                }
-                ///
-                for (int search_back = 0; search_back < basepair_structure.size(); search_back++) {
-                    if (basepair_structure[y - search_back] == "(") {
-                        if (basepair_structure_info_vecs[y][4] == 0) {
-                            tempUsageVector = basepair_structure_info_vecs[y - search_back];
-                            tempUsageVector[2] = 2;
-                            basepair_structure_info_vecs[y] = tempUsageVector;
-                            basepair_structure_info_vecs[y - search_back][4] = 1;
-                        }
-                    }
-                }
-                ///
-            }
-            //tempUsageVector[1]--;
-            //basepair_structure_info_vecs[y] = tempUsageVector;
-            closed_bracket_counter++;
-        }
-        */
     }
 
-    std::cout << open_bracket_counter << std::endl;
-    std::cout << closed_bracket_counter << std::endl;
-    //std::cout << basepair_structure.size() << std::endl;
-
     /// @brief - debugging code, prints pairing info vectors to a csv
+    /*
     std::ofstream pairing_debug;
     pairing_debug.open("pairing_debug.csv");
 
     for (int z = 0; z < basepair_structure_info_vecs.size(); z++) {
         pairing_debug << basepair_structure_info_vecs[z].get_bracket_number() << "," << basepair_structure_info_vecs[z].get_basepair_number()
-                      << "," << basepair_structure_info_vecs[z].get_pair_number() << "," << basepair_structure_info_vecs[z].get_helix_depth()
-                      << "," << basepair_structure_info_vecs[z].get_has_been_searched() << std::endl;
+                      << "," << basepair_structure_info_vecs[z].get_pair_number() << std::endl;
     }
-
+     */
 
     /// @brief - sort each pair of positions into WC/NC/LR
-    /*
-    String bp_i;
-    String bp_j;
+    int bp_i = 0;
+    int bp_j = 0;
     String bp_pos_temp;
     Strings bp_pos_temps;
+    ThreeDInfoVector vector_i = {0, 0, 0};
+    ThreeDInfoVector vector_j = {0, 0, 0};
+    std::ofstream ring_mapper_pairmap;
+    ring_mapper_pairmap.open("ring_mapper_pairmap.csv");
     std::ifstream input_position_file("ring_mapper_positions.csv");
     while (ring_mapper_temp_2.good()) {
         getline(input_position_file, bp_pos_temp);
         bp_pos_temps = split(bp_pos_temp, ",");
-        std::cout << bp_pos_temps[0] << std::endl;
-        std::cout << bp_pos_temps[1] << std::endl;
-        break; //temporary until I figure this out
-    }
-     */
-    for (int i = 0; i < i_pos_vector_str.size(); i++) {
+        bp_i = std::stoi(bp_pos_temps[0]);
+        bp_j = std::stoi(bp_pos_temps[1]);
 
-    }
+        vector_i = basepair_structure_info_vecs[bp_i - 1];
+        vector_j = basepair_structure_info_vecs[bp_j - 1];
 
+        if (vector_i.get_pair_number() == 0) {
+            if (vector_i.get_pair_number() != vector_j.get_pair_number()) {
+                ring_mapper_pairmap << bp_i << "," << bp_j << "," << "LR" << std::endl;
+            } else if (vector_i.get_bracket_number() == vector_j.get_bracket_number()) {
+                ring_mapper_pairmap << bp_i << "," << bp_j << "," << "NC" << std::endl;
+            } else if (vector_i.get_bracket_number() != vector_j.get_bracket_number()) {
+                ring_mapper_pairmap << bp_i << "," << bp_j << "," << "LR" << std::endl;
+            }
+        } else if (vector_i.get_pair_number() != 0) {
+            if (vector_i.get_bracket_number() == vector_j.get_bracket_number()) {
+                if (vector_i.get_basepair_number() == vector_j.get_basepair_number()) {
+                    ring_mapper_pairmap << bp_i << "," << bp_j << "," << "WC" << std::endl;
+                } else if (vector_i.get_basepair_number() != vector_j.get_basepair_number()) {
+                    ring_mapper_pairmap << bp_i << "," << bp_j << "," << "LOCAL" << std::endl;
+                }
+            } else if (vector_i.get_bracket_number() != vector_j.get_bracket_number()) {
+                ring_mapper_pairmap << bp_i << "," << bp_j << "," << "LR" << std::endl;
+            }
+        }
+    }
     std::cout << "Pairing finished..." << std::endl;
-    std::cout << "(Pairing not yet fully functional)" << std::endl;
-    // end of process
-    //
-    //
-    //
-    //
-    //
-    //
-    // code is finished
     std::cout << "Process finished!" << std::endl;
 }
