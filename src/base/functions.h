@@ -5,6 +5,8 @@
 #ifndef RING_MAPPER_ANALYSIS_FUNCTIONS_H
 #define RING_MAPPER_ANALYSIS_FUNCTIONS_H
 
+#include <iostream>
+
 using String = std::string;
 using Strings = std::vector<std::string>;
 using Char = char;
@@ -29,6 +31,18 @@ inline Strings split(const String &org_s, const String &delimiter) {
     }
     return tokens;
 }
+
+inline void num_to_int(String s)
+{
+    // Initialize a variable
+    int num = 0;
+    int n = s.length();
+    // Iterate till length of the string
+    for (int i = 0; i < n; i++)
+        // Subtract 48 from the current digit
+        num = num * 10 + (int(s[i]) - 48);
+}
+
 
 
 

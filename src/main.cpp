@@ -351,48 +351,50 @@ int main(int argc, char **argv) {
      */
 
     /// @brief - sort each pair of positions into WC/NC/LR
-    int bp_i = 0;
-    int bp_j = 0;
+    String basepair_i;
+    String basepair_j;
     String bp_pos_temp;
     Strings bp_pos_temps;
-    ThreeDInfoVector vector_i = {0, 0, 0};
-    ThreeDInfoVector vector_j = {0, 0, 0};
+    ThreeDInfoVector vector_i;
+    ThreeDInfoVector vector_j;
     std::ofstream ring_mapper_pairmap;
     ring_mapper_pairmap.open("ring_mapper_pairmap.csv");
     std::ifstream input_position_file("ring_mapper_positions.csv");
+
     while (ring_mapper_temp_2.good()) {
         getline(input_position_file, bp_pos_temp);
+        if (bp_pos_temp.length() < 2) {
+            break;
+        }
         bp_pos_temps = split(bp_pos_temp, ",");
-        bp_i = std::stoi(bp_pos_temps[0]);
-        bp_j = std::stoi(bp_pos_temps[1]);
+        basepair_i = bp_pos_temps[0];
+        basepair_j = bp_pos_temps[1];
 
-        vector_i = basepair_structure_info_vecs[bp_i - 1];
-        vector_j = basepair_structure_info_vecs[bp_j - 1];
+        vector_i = basepair_structure_info_vecs[std::stoi(basepair_i) - 1];
+        vector_j = basepair_structure_info_vecs[std::stoi(basepair_j) - 1];
 
         if (vector_i.get_pair_number() == 0) {
             if (vector_i.get_pair_number() != vector_j.get_pair_number()) {
-                ring_mapper_pairmap << bp_i << "," << bp_j << "," << "LR" << std::endl;
+                ring_mapper_pairmap << basepair_i << "," << basepair_j << "," << "LR" << std::endl;
             } else if (vector_i.get_bracket_number() == vector_j.get_bracket_number()) {
-                ring_mapper_pairmap << bp_i << "," << bp_j << "," << "NC" << std::endl;
-            } else if (vector_i.get_bracket_number() != vector_j.get_bracket_number()) {
-                ring_mapper_pairmap << bp_i << "," << bp_j << "," << "LR" << std::endl;
+                ring_mapper_pairmap << basepair_i << "," << basepair_j << "," << "NC" << std::endl;
+            } else {
+                ring_mapper_pairmap << basepair_i << "," << basepair_j << "," << "LR" << std::endl;
             }
-        } else if (vector_i.get_pair_number() != 0) {
+        } else {
             if (vector_i.get_bracket_number() == vector_j.get_bracket_number()) {
                 if (vector_i.get_basepair_number() == vector_j.get_basepair_number()) {
-                    ring_mapper_pairmap << bp_i << "," << bp_j << "," << "WC" << std::endl;
-                } else if (vector_i.get_basepair_number() != vector_j.get_basepair_number()) {
-                    ring_mapper_pairmap << bp_i << "," << bp_j << "," << "LOCAL" << std::endl;
-                }
-            } /*else if (vector_i.get_bracket_number() != vector_j.get_bracket_number()) {
-                if (bp_j - bp_i == 1) {
-                    ring_mapper_pairmap << bp_i << "," << bp_j << "," << "LOCAL" << std::endl;
+                    ring_mapper_pairmap << basepair_i << "," << basepair_j << "," << "WC" << std::endl;
                 } else {
-                    ring_mapper_pairmap << bp_i << "," << bp_j << "," << "LR" << std::endl;
+                    ring_mapper_pairmap << basepair_i << "," << basepair_j << "," << "LOCAL" << std::endl;
                 }
-            }*/
+            } else {
+                ring_mapper_pairmap << basepair_i << "," << basepair_j << "," << "LR" << std::endl;
+            }
         }
     }
+
+
     std::cout << "Pairing finished..." << std::endl;
     std::cout << "Process finished!" << std::endl;
 }
