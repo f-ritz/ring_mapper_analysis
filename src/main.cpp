@@ -384,13 +384,13 @@ int main(int argc, char **argv) {
                 } else if (vector_i.get_basepair_number() != vector_j.get_basepair_number()) {
                     ring_mapper_pairmap << bp_i << "," << bp_j << "," << "LOCAL" << std::endl;
                 }
-            } else if (vector_i.get_bracket_number() != vector_j.get_bracket_number()) {
+            } /*else if (vector_i.get_bracket_number() != vector_j.get_bracket_number()) {
                 if (bp_j - bp_i == 1) {
                     ring_mapper_pairmap << bp_i << "," << bp_j << "," << "LOCAL" << std::endl;
                 } else {
                     ring_mapper_pairmap << bp_i << "," << bp_j << "," << "LR" << std::endl;
                 }
-            }
+            }*/
         }
     }
     std::cout << "Pairing finished..." << std::endl;
