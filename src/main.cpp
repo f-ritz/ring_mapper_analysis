@@ -426,8 +426,10 @@ int main(int argc, char **argv) {
         getline(input_ring_mapper_results, ring_mapper_analysis_line);
         ring_mapper_analysis_lines = split(ring_mapper_analysis_line, ",");
 
-        getline(input_pairmap_file, ring_mapper_pairmap_line);
-        ring_mapper_pairmap_lines = split(ring_mapper_pairmap_line, ",");
+        if (line_counter >= 1) {
+            getline(input_pairmap_file, ring_mapper_pairmap_line);
+            ring_mapper_pairmap_lines = split(ring_mapper_pairmap_line, ",");
+        }
 
         if (ring_mapper_analysis_line.length() < 3) {
             break;
