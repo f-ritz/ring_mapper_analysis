@@ -13,7 +13,10 @@
 #include "../base/ThreeDInfoVector.h"
 
 int main(int argc, char **argv) {
+
     std::cout << "Processing..." << std::endl;
+    std::cout << " " << std::endl;
+
     if (argc > 6) {
         std::cout << "Too many command-line arguments!!" << std::endl;
         std::cout
@@ -27,6 +30,7 @@ int main(int argc, char **argv) {
                 << std::endl;
         exit(0);
     }
+
     int number_of_reads;
     number_of_reads = std::stoi(argv[3]);
     int i_retrieval;
@@ -38,6 +42,7 @@ int main(int argc, char **argv) {
     int vector_size;
     int num_mutations_int;
     int sum_muts;
+
     String filename(argv[1]);
     String structure_filename(argv[2]);
     String line;
@@ -46,14 +51,17 @@ int main(int argc, char **argv) {
     Strings data_temp;
     Strings lines;
     std::ifstream input_file(filename);
+
     if (!input_file.is_open()) {
         std::cerr << "Could not open the file - '" << filename << "'" << std::endl;
         return EXIT_FAILURE;
     }
+
     String data_counter_single;
     String data_counter_line;
     Strings data_counter;
     Strings mutation_counter;
+
     for (int i = 0; i < 4; i++) {
         getline(input_file, data_counter_line);
         data_counter = split(data_counter_line, "\t");
@@ -61,6 +69,7 @@ int main(int argc, char **argv) {
             data_counter_single = data_counter[1];
         }
     }
+
     vector_size = data_counter_single.length();
     std::ofstream ring_mapper_analysis_csv;
     ring_mapper_analysis_csv.open("ring_mapper_results.csv");
@@ -79,6 +88,7 @@ int main(int argc, char **argv) {
     std::vector<std::vector<float>> b;
     std::vector<std::vector<float>> c;
     std::vector<std::vector<float>> d;
+
     for (int i = 0; i < vector_size; i++) {
         std::vector<float> v;
         for (int j = 0; j < vector_size; j++) {
@@ -89,6 +99,7 @@ int main(int argc, char **argv) {
         c.push_back(v);
         d.push_back(v);
     }
+
     double five_percent_cutoff = 0.05 * vector_size;
     std::vector<float> mut_positions;
     std::vector<float> mut_positions_frequency;
@@ -199,8 +210,8 @@ int main(int argc, char **argv) {
     std::cout << "Histogram finished..." << std::endl;
 
     // temp file creation for pairing algorithm
-    std::ofstream ring_mapper_temp_2;
-    ring_mapper_temp_2.open("ring_mapper_positions.csv");
+    std::ofstream ring_mapper_positions;
+    ring_mapper_positions.open("ring_mapper_positions.csv");
 
     /// @brief - ring mapper results
     for (int i = 0; i < vector_size; i++) {
@@ -216,7 +227,7 @@ int main(int argc, char **argv) {
             if (chisq > 20) {
                 ring_mapper_analysis_csv << i + 1 << "," << j + 1 << "," << chisq << "," << a[i][j] << "," << b[i][j]
                                          << "," << c[i][j] << "," << d[i][j] << std::endl;
-                ring_mapper_temp_2 << i + 1 << "," << j + 1 << std::endl;
+                ring_mapper_positions << i + 1 << "," << j + 1 << std::endl;
             }
         }
     }
@@ -237,7 +248,7 @@ int main(int argc, char **argv) {
     String temp_1;
     String basepair_i_string;
     String basepair_j_string;
-    String ring_mapper_temp_2_line;
+    String ring_mapper_positions_line;
     String ring_mapper_input;
     Strings pos_temp_vector;
     Strings i_pos_vector_temp;
@@ -276,7 +287,7 @@ int main(int argc, char **argv) {
 
     /// @brief - position processing, retrieves positions of basepairs
     int pos_loop_counter;
-    while (ring_mapper_temp_2.good()) {
+    while (ring_mapper_positions.good()) {
         if (pos_loop_counter > 0) {
             getline(input_analysis_file, pos_temp);
             pos_temp_vector = split(pos_temp, ",");
@@ -361,7 +372,7 @@ int main(int argc, char **argv) {
     ring_mapper_pairmap.open("ring_mapper_pairmap.csv");
     std::ifstream input_position_file("ring_mapper_positions.csv");
 
-    while (ring_mapper_temp_2.good()) {
+    while (ring_mapper_positions.good()) {
         getline(input_position_file, bp_pos_temp);
         if (bp_pos_temp.length() < 2) {
             break;
@@ -393,8 +404,117 @@ int main(int argc, char **argv) {
             }
         }
     }
-
-
     std::cout << "Pairing finished..." << std::endl;
+
+    /// @brief - write everything to a single file
+
+    std::ifstream input_ring_mapper_results("ring_mapper_results.csv");
+    std::ifstream input_pairmap_file("ring_mapper_pairmap.csv");
+
+    std::ofstream ring_mapper_final_analysis;
+    ring_mapper_final_analysis.open("ring_mapper_analysis.csv");
+
+    String ring_mapper_analysis_line;
+    Strings ring_mapper_analysis_lines;
+
+    String ring_mapper_pairmap_line;
+    Strings ring_mapper_pairmap_lines;
+
+    int line_counter = 0;
+
+    while (ring_mapper_analysis_csv.good()) {
+        getline(input_ring_mapper_results, ring_mapper_analysis_line);
+        ring_mapper_analysis_lines = split(ring_mapper_analysis_line, ",");
+
+        getline(input_pairmap_file, ring_mapper_pairmap_line);
+        ring_mapper_pairmap_lines = split(ring_mapper_pairmap_line, ",");
+
+        if (ring_mapper_analysis_line.length() < 3) {
+            break;
+        }
+
+        if (line_counter < 1) {
+            ring_mapper_final_analysis << ring_mapper_analysis_lines[0] << "," << ring_mapper_analysis_lines[1] << ","
+                                       << ring_mapper_analysis_lines[2] << "," << ring_mapper_analysis_lines[3] << ","
+                                       << ring_mapper_analysis_lines[4] << "," << ring_mapper_analysis_lines[5] << ","
+                                       << ring_mapper_analysis_lines[6] << "," << "basepair_type" << std::endl;
+        } else {
+            ring_mapper_final_analysis << ring_mapper_analysis_lines[0] << "," << ring_mapper_analysis_lines[1] << ","
+                                       << ring_mapper_analysis_lines[2] << "," << ring_mapper_analysis_lines[3] << ","
+                                       << ring_mapper_analysis_lines[4] << "," << ring_mapper_analysis_lines[5] << ","
+                                       << ring_mapper_analysis_lines[6] << "," << ring_mapper_pairmap_lines[2] << std::endl;
+        }
+
+        line_counter++;
+
+
+        /*
+        std::cout << ring_mapper_analysis_lines[0] << std::endl;
+        std::cout << ring_mapper_analysis_lines[1] << std::endl;
+        std::cout << ring_mapper_analysis_lines[2] << std::endl;
+        std::cout << ring_mapper_analysis_lines[3] << std::endl;
+        std::cout << ring_mapper_analysis_lines[4] << std::endl;
+        std::cout << ring_mapper_analysis_lines[5] << std::endl;
+        std::cout << ring_mapper_analysis_lines[6] << std::endl;
+        */
+        //break;
+    }
+
+    /*
+
+    //int line_counter;
+
+    Strings analysis_lines_container;
+    Strings pairmap_lines_container;
+
+    while (ring_mapper_analysis_csv.good()) {
+        getline(input_analysis_file, ring_mapper_analysis_line);
+        ring_mapper_analysis_lines = split(ring_mapper_analysis_line, ",");
+
+        getline(input_pairmap_file, ring_mapper_pairmap_line);
+        ring_mapper_pairmap_lines = split(ring_mapper_pairmap_line, ",");
+
+        ring_mapper_analysis_lines = split(ring_mapper_analysis_line, ",");
+        ring_mapper_pairmap_lines = split(ring_mapper_pairmap_line, ",");
+
+        std::cout << ring_mapper_analysis_lines[0] << std::endl;
+        std::cout << ring_mapper_analysis_lines[1] << std::endl;
+        std::cout << ring_mapper_analysis_lines[2] << std::endl;
+        std::cout << ring_mapper_analysis_lines[3] << std::endl;
+        std::cout << ring_mapper_analysis_lines[4] << std::endl;
+        std::cout << ring_mapper_analysis_lines[5] << std::endl;
+        std::cout << ring_mapper_analysis_lines[6] << std::endl;
+        std::cout << ring_mapper_pairmap_lines[6] << std::endl;
+
+
+        if (line_counter < 1) {
+            ring_mapper_final_analysis << ring_mapper_analysis_lines[0] << "," << ring_mapper_analysis_lines[1] << ","
+                                       << ring_mapper_analysis_lines[2] << "," << ring_mapper_analysis_lines[3] << ","
+                                       << ring_mapper_analysis_lines[4] << "," << ring_mapper_analysis_lines[5] << ","
+                                       << ring_mapper_analysis_lines[6] << "," << ring_mapper_analysis_lines[7] << std::endl;
+        } else {
+            ring_mapper_final_analysis << ring_mapper_analysis_lines[0] << "," << ring_mapper_analysis_lines[1] << ","
+                                       << ring_mapper_analysis_lines[2] << "," << ring_mapper_analysis_lines[3] << ","
+                                       << ring_mapper_analysis_lines[4] << "," << ring_mapper_analysis_lines[5] << ","
+                                       << ring_mapper_analysis_lines[6] << "," << ring_mapper_pairmap_lines[2] << std::endl;
+        }
+
+        line_counter++;
+
+    }
+    while (ring_mapper_pairmap.good()) {
+        getline(input_pairmap_file, ring_mapper_pairmap_line);
+        ring_mapper_pairmap_lines = split(ring_mapper_pairmap_line, ",");
+    }
+*/
+
+
+
+
+
+    std::cout << "Sorting results..." << std::endl;
+
+    std::cout << " " << std::endl;
+
     std::cout << "Process finished!" << std::endl;
 }
