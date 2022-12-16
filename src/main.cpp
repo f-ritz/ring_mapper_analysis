@@ -31,27 +31,32 @@ int main(int argc, char **argv) {
         exit(0);
     }
 
+    // takes in the number of reads the algo must do from input
     int number_of_reads;
     number_of_reads = std::stoi(argv[3]);
+
+    // reads the i,j postions to retrieve from input
     int i_retrieval;
     i_retrieval = std::stoi(argv[4]);
     int j_retrieval;
     j_retrieval = std::stoi(argv[5]);
+
     int n = 0;
     int counter = 0;
     int vector_size;
     int num_mutations_int;
-    int sum_muts;
 
     String filename(argv[1]);
     String structure_filename(argv[2]);
     String line;
     String data;
     String num_mutations_str;
+
     Strings data_temp;
     Strings lines;
-    std::ifstream input_file(filename);
 
+    // checks if the file input is workable or not
+    std::ifstream input_file(filename);
     if (!input_file.is_open()) {
         std::cerr << "Could not open the file - '" << filename << "'" << std::endl;
         return EXIT_FAILURE;
@@ -59,6 +64,7 @@ int main(int argc, char **argv) {
 
     String data_counter_single;
     String data_counter_line;
+
     Strings data_counter;
     Strings mutation_counter;
 
@@ -71,24 +77,38 @@ int main(int argc, char **argv) {
     }
 
     vector_size = data_counter_single.length();
+    double five_percent_cutoff = 0.05 * vector_size;
+
+    /// @brief - opens all the output files
+
+    // opens the raw results file
     std::ofstream ring_mapper_analysis_csv;
     ring_mapper_analysis_csv.open("ring_mapper_results.csv");
     ring_mapper_analysis_csv << "i" << "," << "j" << "," << "chisq" << "," << "a" << "," << "b" << "," << "c" << ","
                              << "d" << std::endl;
+
+    // opens the histogram file
     std::ofstream ring_mapper_histogram_csv;
     ring_mapper_histogram_csv.open("ring_mapper_histogram.csv");
+
+    // opens the retrieval file
     std::ofstream ring_mapper_retrieval_csv;
     ring_mapper_retrieval_csv.open("ring_mapper_temp.csv");
+
+    // opens file that shows number of muts in each pos
     std::ofstream ring_mapper_histogram_positions_csv;
     ring_mapper_histogram_positions_csv.open("ring_mapper_counter.csv");
+
+    // opens retrieval file
     std::ofstream ring_mapper_retrieval_real_csv;
     ring_mapper_retrieval_real_csv.open("ring_mapper_retrieval.csv");
     ring_mapper_retrieval_real_csv << "i" << "," << "j" << std::endl;
+
+    // initialization of abcd sets
     std::vector<std::vector<float>> a;
     std::vector<std::vector<float>> b;
     std::vector<std::vector<float>> c;
     std::vector<std::vector<float>> d;
-
     for (int i = 0; i < vector_size; i++) {
         std::vector<float> v;
         for (int j = 0; j < vector_size; j++) {
@@ -100,7 +120,6 @@ int main(int argc, char **argv) {
         d.push_back(v);
     }
 
-    double five_percent_cutoff = 0.05 * vector_size;
     std::vector<float> mut_positions;
     std::vector<float> mut_positions_frequency;
     for (int i = 0; i < vector_size; i++) {
@@ -109,6 +128,7 @@ int main(int argc, char **argv) {
     }
 
     /// @brief - ring mapper algorithm
+
     while (input_file.good()) {
         getline(input_file, line);
         if (line.length() < 2) {
@@ -162,12 +182,20 @@ int main(int argc, char **argv) {
         counter++;
     }
 
+    std::cout << "ABCD values mapped..." << std::endl;
+
     /// @brief - retrieval
+
+    String temp_line;
     String temp_filename;
+
+    Strings data_temp_vector;
+
+    // creates a temporary file that will be read from to retrieve the data from the inputted basepair
     temp_filename = "ring_mapper_temp.csv";
     std::ifstream input_temp_file(temp_filename);
-    String temp_line;
-    Strings data_temp_vector;
+
+    // outputs to a file the data at the given basepairs (ring_mapper_retrieval.csv)
     while (input_temp_file.good()) {
         getline(input_temp_file, temp_line);
         data_temp_vector = split(temp_line, ",");
@@ -198,15 +226,25 @@ int main(int argc, char **argv) {
         }
     }
 
+    std::cout << "Basepair data retrieved..." << std::endl;
+
     /// @brief - histogram
+
+    int sum_muts;
+
+    // adds up total number of mutations in the read
     sum_muts = std::accumulate(mut_positions.begin(), mut_positions.end(), 0);
+
+    // writes # of total muts to a counter file
     ring_mapper_histogram_csv << "i,histogram_values" << std::endl;
     ring_mapper_histogram_positions_csv << "i, num_single_muts, total_muts: " << sum_muts << std::endl;
+
     for (int i = 0; i < vector_size; i++) {
         mut_positions_frequency[i] = (mut_positions[i] / sum_muts);
         ring_mapper_histogram_positions_csv << i + 1 << "," << mut_positions[i] << std::endl;
         ring_mapper_histogram_csv << i + 1 << "," << mut_positions_frequency[i] << std::endl;
     }
+
     std::cout << "Histogram finished..." << std::endl;
 
     // temp file creation for pairing algorithm
@@ -214,6 +252,8 @@ int main(int argc, char **argv) {
     ring_mapper_positions.open("ring_mapper_positions.csv");
 
     /// @brief - ring mapper results
+
+    // chisq calculation, spits out to ring_mapper_results_csv
     for (int i = 0; i < vector_size; i++) {
         for (int j = i + 1; j < vector_size; j++) {
             float dim = (a[i][j] + b[i][j]) * (c[i][j] + d[i][j]) * (a[i][j] + c[i][j]) * (b[i][j] + d[i][j]);
@@ -231,13 +271,17 @@ int main(int argc, char **argv) {
             }
         }
     }
+
     std::cout << "Chisq finished..." << std::endl;
 
-    /// @brief - pairing algorithm
-    // variables are a clusterfuck
-    String analysis_filename = "ring_mapper_results.csv";
+    /// @brief - start of pairing algorithm
+
+    // pairing will start by processing the dot-bracket notation listed in structure_input.txt
+    String analysis_filename = "ring_mapper_results.csv"; // this will retrieve all basepairs with chisq > 20
     std::ifstream input_analysis_file(analysis_filename);
     std::ifstream input_structure_file(structure_filename);
+
+    // declaration of variables
     String structure_raw;
     String i_pos;
     String j_pos;
@@ -250,6 +294,7 @@ int main(int argc, char **argv) {
     String basepair_j_string;
     String ring_mapper_positions_line;
     String ring_mapper_input;
+
     Strings pos_temp_vector;
     Strings i_pos_vector_temp;
     Strings j_pos_vector_temp;
@@ -261,22 +306,25 @@ int main(int argc, char **argv) {
     Strings ring_mapper_inputs;
     Strings i_positions;
     Strings j_positions;
+
     Ints i_pos_vector;
     Ints j_pos_vector;
 
-    /// @brief - structure processing
     // initializes a vector that contains the processed (cooked) structure
     for (int i = 0; i < 3; i++) {
         cooked_structure.push_back("");
     }
+
     // writes each line in the input text file "structure_input.txt" to a spot in cooked_structure
     for (int i = 0; i < 3; i++) {
         getline(input_structure_file, structure_raw);
         cooked_structure[i] = structure_raw;
     }
+
     // processes the cooked_structure and retrieves proper data
-    base_chain = cooked_structure[0];
-    basepair_structure_chain = cooked_structure[1];
+    base_chain = cooked_structure[0]; // ATCG chain
+    basepair_structure_chain = cooked_structure[1]; // dot-bracket notation
+
     // more vectors, this time processing the data into its final form to be ready to plug in the algorithm
     for (int i = 0; i < vector_size; i++) {
         temp = base_chain[i];
@@ -286,7 +334,10 @@ int main(int argc, char **argv) {
     }
 
     /// @brief - position processing, retrieves positions of basepairs
-    int pos_loop_counter;
+
+    int pos_loop_counter = 0;
+
+    // writes basepair positions to vectors
     while (ring_mapper_positions.good()) {
         if (pos_loop_counter > 0) {
             getline(input_analysis_file, pos_temp);
@@ -298,7 +349,6 @@ int main(int argc, char **argv) {
             }
             i_pos_vector_temp.push_back(i_pos);
             j_pos_vector_temp.push_back(j_pos);
-            //ring_mapper_pos_csv << i_pos << "," << j_pos << std::endl;
         }
         pos_loop_counter++;
     }
@@ -310,17 +360,22 @@ int main(int argc, char **argv) {
     }
 
     /// @brief - build the RNA structure using information vectors
+
     // stack creation
     std::stack<ThreeDInfoVector> stack_info_vectors;
-    ThreeDInfoVector twoDInfoVector = {0, 0, 0};
-    ThreeDInfoVector threeDInfoVector = {0, 0, 0}; // vector args: {bracketNumber, basepairNumber, pairNumber}
+
+    ThreeDInfoVector twoDInfoVector = {0, 0, 0}; // vector args: {bracketNumber, basepairNumber, pairNumber}
+    ThreeDInfoVector threeDInfoVector = {0, 0, 0};
     ThreeDInfoVector emptyVector = {0, 0, 0};
     ThreeDInfoVector tempUsageVector = {0, 0, 0}; // vector for temporary/transfer usage throughout algo
+
+    // initializes the structure of the infovec container
     std::vector<ThreeDInfoVector> basepair_structure_info_vecs;
     for (int i = 0; i < basepair_structure.size(); i++) {
         basepair_structure_info_vecs.push_back(emptyVector);
     }
 
+    // meat of the pairing algo, creates a stack of info vectors
     for (int y = 0; y < basepair_structure.size(); y++) {
         // motifs
         if (basepair_structure[y] == ".") {
@@ -350,28 +405,23 @@ int main(int argc, char **argv) {
         }
     }
 
-    /// @brief - debugging code, prints pairing info vectors to a csv
-    /*
-    std::ofstream pairing_debug;
-    pairing_debug.open("pairing_debug.csv");
-
-    for (int z = 0; z < basepair_structure_info_vecs.size(); z++) {
-        pairing_debug << basepair_structure_info_vecs[z].get_bracket_number() << "," << basepair_structure_info_vecs[z].get_basepair_number()
-                      << "," << basepair_structure_info_vecs[z].get_pair_number() << std::endl;
-    }
-     */
-
     /// @brief - sort each pair of positions into WC/NC/LR
+
     String basepair_i;
     String basepair_j;
     String bp_pos_temp;
+
     Strings bp_pos_temps;
+
     ThreeDInfoVector vector_i;
     ThreeDInfoVector vector_j;
+
     std::ofstream ring_mapper_pairmap;
     ring_mapper_pairmap.open("ring_mapper_pairmap.csv");
+
     std::ifstream input_position_file("ring_mapper_positions.csv");
 
+    // sorting into WC/NC/LR/LOCAL
     while (ring_mapper_positions.good()) {
         getline(input_position_file, bp_pos_temp);
         if (bp_pos_temp.length() < 2) {
@@ -404,13 +454,16 @@ int main(int argc, char **argv) {
             }
         }
     }
+
     std::cout << "Pairing finished..." << std::endl;
 
     /// @brief - write everything to a single file
 
+    // initialize input files
     std::ifstream input_ring_mapper_results("ring_mapper_results.csv");
     std::ifstream input_pairmap_file("ring_mapper_pairmap.csv");
 
+    // initialize output ring_mapper_analysis.csv
     std::ofstream ring_mapper_final_analysis;
     ring_mapper_final_analysis.open("ring_mapper_analysis.csv");
 
@@ -422,6 +475,7 @@ int main(int argc, char **argv) {
 
     int line_counter = 0;
 
+    // writing the results of chisq and basepairing into a single master file 
     while (ring_mapper_analysis_csv.good()) {
         getline(input_ring_mapper_results, ring_mapper_analysis_line);
         ring_mapper_analysis_lines = split(ring_mapper_analysis_line, ",");
@@ -448,75 +502,9 @@ int main(int argc, char **argv) {
         }
 
         line_counter++;
-
-
-        /*
-        std::cout << ring_mapper_analysis_lines[0] << std::endl;
-        std::cout << ring_mapper_analysis_lines[1] << std::endl;
-        std::cout << ring_mapper_analysis_lines[2] << std::endl;
-        std::cout << ring_mapper_analysis_lines[3] << std::endl;
-        std::cout << ring_mapper_analysis_lines[4] << std::endl;
-        std::cout << ring_mapper_analysis_lines[5] << std::endl;
-        std::cout << ring_mapper_analysis_lines[6] << std::endl;
-        */
-        //break;
     }
-
-    /*
-
-    //int line_counter;
-
-    Strings analysis_lines_container;
-    Strings pairmap_lines_container;
-
-    while (ring_mapper_analysis_csv.good()) {
-        getline(input_analysis_file, ring_mapper_analysis_line);
-        ring_mapper_analysis_lines = split(ring_mapper_analysis_line, ",");
-
-        getline(input_pairmap_file, ring_mapper_pairmap_line);
-        ring_mapper_pairmap_lines = split(ring_mapper_pairmap_line, ",");
-
-        ring_mapper_analysis_lines = split(ring_mapper_analysis_line, ",");
-        ring_mapper_pairmap_lines = split(ring_mapper_pairmap_line, ",");
-
-        std::cout << ring_mapper_analysis_lines[0] << std::endl;
-        std::cout << ring_mapper_analysis_lines[1] << std::endl;
-        std::cout << ring_mapper_analysis_lines[2] << std::endl;
-        std::cout << ring_mapper_analysis_lines[3] << std::endl;
-        std::cout << ring_mapper_analysis_lines[4] << std::endl;
-        std::cout << ring_mapper_analysis_lines[5] << std::endl;
-        std::cout << ring_mapper_analysis_lines[6] << std::endl;
-        std::cout << ring_mapper_pairmap_lines[6] << std::endl;
-
-
-        if (line_counter < 1) {
-            ring_mapper_final_analysis << ring_mapper_analysis_lines[0] << "," << ring_mapper_analysis_lines[1] << ","
-                                       << ring_mapper_analysis_lines[2] << "," << ring_mapper_analysis_lines[3] << ","
-                                       << ring_mapper_analysis_lines[4] << "," << ring_mapper_analysis_lines[5] << ","
-                                       << ring_mapper_analysis_lines[6] << "," << ring_mapper_analysis_lines[7] << std::endl;
-        } else {
-            ring_mapper_final_analysis << ring_mapper_analysis_lines[0] << "," << ring_mapper_analysis_lines[1] << ","
-                                       << ring_mapper_analysis_lines[2] << "," << ring_mapper_analysis_lines[3] << ","
-                                       << ring_mapper_analysis_lines[4] << "," << ring_mapper_analysis_lines[5] << ","
-                                       << ring_mapper_analysis_lines[6] << "," << ring_mapper_pairmap_lines[2] << std::endl;
-        }
-
-        line_counter++;
-
-    }
-    while (ring_mapper_pairmap.good()) {
-        getline(input_pairmap_file, ring_mapper_pairmap_line);
-        ring_mapper_pairmap_lines = split(ring_mapper_pairmap_line, ",");
-    }
-*/
-
-
-
-
 
     std::cout << "Sorting results..." << std::endl;
-
     std::cout << " " << std::endl;
-
     std::cout << "Process finished!" << std::endl;
 }
