@@ -251,6 +251,45 @@ int main(int argc, char **argv) {
     std::ofstream ring_mapper_positions;
     ring_mapper_positions.open("ring_mapper_positions.csv");
 
+    /*
+    /// @brief - histogram but with chisq attached
+    // chisq values over a single i base are averaged
+    // j is not taken into account
+
+    // input files to read from are declared here
+    std::ifstream input_chisq_results("ring_mapper_results.csv");
+
+    // initializes the output file
+    std::ofstream ring_mapper_histo_chisq;
+    ring_mapper_histo_chisq.open("ring_mapper_histo_chisq.csv");
+
+    String chisq_input_from_file;
+    Strings chisq_results_from_file;
+
+    String i_position;
+    String i_position_old;
+
+    double chisq_histo = 0;
+
+    int line_counter_chisq = 0;
+    while (input_chisq_results.good()) {
+        getline(input_chisq_results, chisq_input_from_file);
+        chisq_results_from_file = split(chisq_input_from_file, ",");
+
+        if (line_counter_chisq > 0) {
+
+            i_position = chisq_results_from_file[0];
+
+
+
+
+            i_position_old = i_position;
+        }
+
+        line_counter_chisq++;
+    }
+*/
+
     /// @brief - ring mapper results
 
     // chisq calculation, spits out to ring_mapper_results_csv
@@ -467,15 +506,30 @@ int main(int argc, char **argv) {
     std::ofstream ring_mapper_final_analysis;
     ring_mapper_final_analysis.open("ring_mapper_analysis.csv");
 
+    /*
+    // initialize output CSVs depending on basepair type
+    std::ofstream ring_mapper_final_analysis_LR;
+    ring_mapper_final_analysis_LR.open("ring_mapper_analysis_LR.csv");
+
+    std::ofstream ring_mapper_final_analysis_NC;
+    ring_mapper_final_analysis_NC.open("ring_mapper_analysis_NC.csv");
+
+    std::ofstream ring_mapper_final_analysis_WC;
+    ring_mapper_final_analysis_WC.open("ring_mapper_analysis_WC.csv");
+
+    std::ofstream ring_mapper_final_analysis_LOCAL;
+    ring_mapper_final_analysis_LOCAL.open("ring_mapper_analysis_LOCAL.csv");
+*/
     String ring_mapper_analysis_line;
     Strings ring_mapper_analysis_lines;
 
     String ring_mapper_pairmap_line;
     Strings ring_mapper_pairmap_lines;
 
+
     int line_counter = 0;
 
-    // writing the results of chisq and basepairing into a single master file 
+    // writing the results of chisq and basepairing into a single master file
     while (ring_mapper_analysis_csv.good()) {
         getline(input_ring_mapper_results, ring_mapper_analysis_line);
         ring_mapper_analysis_lines = split(ring_mapper_analysis_line, ",");
@@ -499,10 +553,26 @@ int main(int argc, char **argv) {
                                        << ring_mapper_analysis_lines[2] << "," << ring_mapper_analysis_lines[3] << ","
                                        << ring_mapper_analysis_lines[4] << "," << ring_mapper_analysis_lines[5] << ","
                                        << ring_mapper_analysis_lines[6] << "," << ring_mapper_pairmap_lines[2] << std::endl;
+
+            /*
+            if (ring_mapper_pairmap_lines[2] == "LR") {
+
+            } else if (ring_mapper_pairmap_lines[2] == "WC") {
+
+            } else if (ring_mapper_pairmap_lines[2] == "NC") {
+
+            } else if (ring_mapper_analysis_lines[2] == "LOCAL") {
+
+            }
+             */
         }
 
         line_counter++;
     }
+
+
+
+
 
     std::cout << "Sorting results..." << std::endl;
     std::cout << " " << std::endl;
